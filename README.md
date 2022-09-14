@@ -22,7 +22,7 @@ AjaxDB.CreateDatabase(); // Use if the database is not created - OUTPUT: boolean
 ```ts
 AjaxDB.CreatePointer("PointerName", "ContainerName"); //It is recommended to put everything together
 ```
-- `pushData`
+- `push`
 ```ts
 AjaxDB.pushData("PointerName", { "...": ... }); // This method is used to add elements, it accepts an object with any data type as long as it follows the syntax. (IMPORTANT: the key must be defined in quotes) OUTPUT: boolean
 ```
@@ -32,11 +32,11 @@ AjaxDB.set("PointerName", { "...": ... }); // Be careful, this method modifies a
 // Example of set (My Container = { "name": "Printf", "lastname": "Dead" })
 AjaxDB.set("PointerName", { "name": "Printf" }); // Container = { "name": "Printf" }
 ```
-- `editKey`
+- `editByKey`
 ```ts
 AjaxDB.editKey("PointerName", "KeyOfContainer", "value"); // edit the data of a single data OUTPUT: boolean
 ```
-- `deleteKey`
+- `deleteByKey`
 ```ts
 AjaxDB.deleteKey("PointerName", "Key"); // delete key OUTPUT: boolean
 ```
@@ -51,6 +51,18 @@ console.log(AjaxDB.findPointer("PointerName")); // OUTPUT: Pointer data
 - `findContainer`
 ```ts
 console.log(AjaxDB.findContainer("PointerName")); // OUTPUT: Container data
+```
+- `get`
+```ts
+console.log(AjaxDB.get("PointerName"); // OUTPUT: key data
+```
+- `getSeveral`
+```ts
+console.log(AjaxDB.getSeveral(["Pointer1", "Pointer2", "Pointer3", ...]));
+```
+- `pushSeveral`
+```ts
+AjaxDB.pushSeveral(["Pointer1", "Pointer2", "Pointer3"], [{...}, {...}, {...}]);
 ```
 
 ## Development notes
