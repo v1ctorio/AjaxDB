@@ -1,8 +1,12 @@
 import { Client } from '../index';
 
-const AjaxDB = new Client({ name: "uwuDB", path: __dirname+"/../.." }); // Important! do not put / at the end of the path
+const AjaxDB = new Client({ path: __dirname+"/../.." }); // Important! do not put / at the end of the path
 
-AjaxDB.CreateDatabase(); // Use only if database does not exist.
+AjaxDB.CreateDatabase("DatabaseName"); // Use only if database does not exist.
+
+// if database exist
+
+AjaxDB.SelectDatabase("DatabaseName");
 
 AjaxDB.CreatePointer('Pointer', 'Container');
 

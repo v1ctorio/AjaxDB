@@ -4,7 +4,6 @@ import { Database } from './Database';
 import BSON from 'bson';
 
 type options = {
-  name: string;
   path: string;
 }
 
@@ -15,9 +14,9 @@ export interface Client {
 
 export class Client extends Database {
   constructor(options: options) {
-    super({name: options.name, path: options.path});
+    super({ path: options.path });
     if(this.path.endsWith("/")) this.path = this.path.slice(0, -1);
-    this.shortPath = this.path + "/ajax_databases/" + this.options.name;
+    this.shortPath = this.path + "/ajax_databases/" + this.database;
       
     if(!fs.existsSync(this.path)) {
       throw new Error("Path is not exists");
@@ -29,7 +28,7 @@ export class Client extends Database {
       });
     }
     
-    if(!fs.existsSync(this.path + "/ajax_databases/" + this.options.name + "/pointers")) {
+    if(!fs.existsSync(this.path + "/ajax_databases/" + this.database + "/pointers")) {
       this.CreatePointers();
     }
   }
