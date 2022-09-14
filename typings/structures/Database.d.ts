@@ -1,16 +1,16 @@
 import { BaseClient } from './BaseClient';
 declare type options = {
-    name: string;
     path: string;
 };
 export interface Database {
-    name: string;
+    database: string;
     options: options;
     path: string;
 }
 export declare class Database extends BaseClient {
     constructor(options: options);
-    CreateDatabase(): void;
+    CreateDatabase(name: string): string;
+    SelectDatabase(name: string): void;
     protected CheckDatabaseDir(): boolean;
     protected CheckPointersDir(): boolean;
     protected CheckContainersDir(): boolean;

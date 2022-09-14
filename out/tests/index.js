@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../index");
-const AjaxDB = new index_1.Client({ name: "uwuDB", path: __dirname + "/../.." }); // Important! do not put / at the end of the path
-AjaxDB.CreateDatabase(); // Use only if database does not exist.
+const AjaxDB = new index_1.Client({ path: __dirname + "/../.." }); // Important! do not put / at the end of the path
+AjaxDB.CreateDatabase("DatabaseName"); // Use only if database does not exist.
+// if database exist
+AjaxDB.SelectDatabase("DatabaseName");
 AjaxDB.CreatePointer('Pointer', 'Container');
 AjaxDB.push('Pointer', { "name": "Printf", "lastname": "Dead" }); // Use to sotre new data without affecting the others - output: boolean
 AjaxDB.set('Pointer', { "name": "Aka", "lastname": "Printf" }); // Use with caution this resets the value of the entire container - output: boolean

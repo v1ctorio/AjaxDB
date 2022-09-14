@@ -1,6 +1,5 @@
 import { Database } from './Database';
 declare type options = {
-    name: string;
     path: string;
 };
 export interface Client {

@@ -230,7 +230,7 @@ export class Database extends BaseClient {
   }
 
   public size() {
-    let dirs = fs.readdirSync(`${this.path}/ajax_databases/${this.name}/pointers`);
+    let dirs = fs.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
     let count = 0;
 
     for (const file of dirs) {

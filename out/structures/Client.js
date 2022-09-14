@@ -9,10 +9,10 @@ const Database_1 = require("./Database");
 const bson_1 = __importDefault(require("bson"));
 class Client extends Database_1.Database {
     constructor(options) {
-        super({ name: options.name, path: options.path });
+        super({ path: options.path });
         if (this.path.endsWith("/"))
             this.path = this.path.slice(0, -1);
-        this.shortPath = this.path + "/ajax_databases/" + this.options.name;
+        this.shortPath = this.path + "/ajax_databases/" + this.database;
         if (!fs_1.default.existsSync(this.path)) {
             throw new Error("Path is not exists");
         }
@@ -22,7 +22,7 @@ class Client extends Database_1.Database {
                     return console.log(err);
             });
         }
-        if (!fs_1.default.existsSync(this.path + "/ajax_databases/" + this.options.name + "/pointers")) {
+        if (!fs_1.default.existsSync(this.path + "/ajax_databases/" + this.database + "/pointers")) {
             this.CreatePointers();
         }
     }
