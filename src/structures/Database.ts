@@ -221,4 +221,24 @@ export class Database extends BaseClient {
     } catch (e) {console.error(e); return false;}
     return true;
   }
+
+  public size() {
+    let dirs = fs.readdirSync(`${this.path}/ajax_databases/${this.name}/pointers`);
+    let count = 0;
+
+    for (const file of dirs) {
+      count += 1;
+    }
+
+    return count;
+  }
+
+  public deleteSeveralByKey(pointers: string[], keys: string[]) {
+    pointers.forEach((x: string) => {
+      keys.forEach((y: string) => {
+        this.deleteByKey(x, y);
+      });
+    });
+    return true;
+  }
 }

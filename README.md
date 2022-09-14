@@ -58,11 +58,19 @@ console.log(AjaxDB.get("PointerName"); // OUTPUT: key data
 ```
 - `getSeveral`
 ```ts
-console.log(AjaxDB.getSeveral(["Pointer1", "Pointer2", "Pointer3", ...]));
+console.log(AjaxDB.getSeveral(["Pointer1", "Pointer2", "Pointer3", ...])); // OUTPUT: object
 ```
 - `pushSeveral`
 ```ts
-AjaxDB.pushSeveral(["Pointer1", "Pointer2", "Pointer3"], [{...}, {...}, {...}]);
+AjaxDB.pushSeveral(["Pointer1", "Pointer2", "Pointer3"], [{...}, {...}, {...}]); // OUTPUT: boolean
+```
+- `size`
+```ts
+AjaxDB.size() // OUTPUT: number
+```
+- `deleteSeveralByKey`
+```ts
+AjaxDB.deleteSeveralByKey(["Pointer1", "Pointer2"], ["Key1", "Key2"]); // OUTPUT: boolean
 ```
 
 ## Development notes
