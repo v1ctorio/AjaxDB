@@ -167,7 +167,7 @@ class Database extends BaseClient_1.BaseClient {
         this.writeContainer(pointer.container, container);
         return true;
     }
-    editByKey(pointer, key, value) {
+    editOneKey(pointer, key, value) {
         const puntero = this.findPointer(pointer);
         const container = this.findContainer(pointer);
         if (!puntero)
@@ -224,6 +224,8 @@ class Database extends BaseClient_1.BaseClient {
     getSeveral(pointers) {
         let data = {};
         pointers.forEach((x) => {
+            if (!this.CheckPointer(x))
+                throw new Error("Pointer is not exists");
             let container = this.findContainer(x);
             Object.assign(data, container);
         });
@@ -232,8 +234,10 @@ class Database extends BaseClient_1.BaseClient {
     pushSeveral(pointers, obj) {
         try {
             pointers.forEach((x) => {
+                if (!this.CheckPointer(x))
+                    throw new Error("Pointer is not exists");
                 obj.forEach((y) => {
-                    this.push(x, y);
+                    return this.push(x, y);
                 });
             });
         }
@@ -253,8 +257,22 @@ class Database extends BaseClient_1.BaseClient {
     }
     deleteSeveralByKey(pointers, keys) {
         pointers.forEach((x) => {
+            if (!this.CheckPointer(x))
+                throw new Error("Pointer is not exists");
             keys.forEach((y) => {
-                this.deleteByKey(x, y);
+                return this.deleteByKey(x, y);
+            });
+        });
+        return true;
+    }
+    editSeveral(pointers, keys, value) {
+        pointers.forEach((x) => {
+            if (!this.CheckPointer(x))
+                throw new Error("Pointer is not exists");
+            keys.forEach((y) => {
+                value.forEach((z) => {
+                    return this.editOneKey(x, y, z);
+                });
             });
         });
         return true;

@@ -1,6 +1,6 @@
 {
   "name": "ajax.db",
-  "version": "1.9.8",
+  "version": "1.9.9",
   "description": "BeeDB inspired database, Fast efficient database, uses BSON",
   "main": "out/index.js",
   "scripts": {

@@ -37,9 +37,9 @@ AjaxDB.set("PointerName", { "...": ... }); // Be careful, this method modifies a
 // Example of set (My Container = { "name": "Printf", "lastname": "Dead" })
 AjaxDB.set("PointerName", { "name": "Printf" }); // Container = { "name": "Printf" }
 ```
-- `editByKey`
+- `editOneKey`
 ```ts
-AjaxDB.editByKey("PointerName", "KeyOfContainer", "value"); // edit the data of a single data OUTPUT: boolean
+AjaxDB.editOneKey("PointerName", "KeyOfContainer", "value"); // edit the data of a single data OUTPUT: boolean
 ```
 - `deleteByKey`
 ```ts
@@ -76,6 +76,10 @@ AjaxDB.size() // OUTPUT: number
 - `deleteSeveralByKey`
 ```ts
 AjaxDB.deleteSeveralByKey(["Pointer1", "Pointer2"], ["Key1", "Key2"]); // OUTPUT: boolean
+```
+- `editSeveral`
+```ts
+AjaxDB.editSeveral(["Pointers"...], ["Keys"...], ["Values"...]); // OUTPUT: boolean
 ```
 
 ## Development notes

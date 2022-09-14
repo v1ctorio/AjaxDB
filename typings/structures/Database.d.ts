@@ -23,7 +23,7 @@ export declare class Database extends BaseClient {
     findPointer(key: string): any;
     findContainer(keyOfPointer: string): import("bson").Document | undefined;
     push(key: string, data: object): boolean;
-    editByKey(pointer: string, key: string, value: unknown): boolean;
+    editOneKey(pointer: string, key: string, value: unknown): boolean;
     deleteByKey(pointer: string, key: string): boolean;
     getDataByKey(pointer: string, key: string): any;
     set(pointer: string, value: object): boolean;
@@ -32,5 +32,6 @@ export declare class Database extends BaseClient {
     pushSeveral(pointers: string[], obj: object[]): boolean;
     size(): number;
     deleteSeveralByKey(pointers: string[], keys: string[]): boolean;
+    editSeveral(pointers: string[], keys: string[], value: unknown[]): boolean;
 }
 export {};

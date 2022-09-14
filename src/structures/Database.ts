@@ -157,7 +157,7 @@ export class Database extends BaseClient {
     return true;
   }
 
-  public editByKey(pointer: string, key: string, value: unknown) {
+  public editOneKey(pointer: string, key: string, value: unknown) {
     const puntero = this.findPointer(pointer);
     const container = this.findContainer(pointer);
     if(!puntero) throw new Error("pointer is not exists");
@@ -212,6 +212,8 @@ export class Database extends BaseClient {
   public getSeveral(pointers: string[]) {
     let data: object = {};
     pointers.forEach((x: string) => {
+      if(!this.CheckPointer(x)) throw new Error("Pointer is not exists");
+
       let container = this.findContainer(x);
       Object.assign(data, container);
     });
@@ -221,8 +223,9 @@ export class Database extends BaseClient {
   public pushSeveral(pointers: string[], obj: object[]) {
     try{
       pointers.forEach((x: string) => {
+        if(!this.CheckPointer(x)) throw new Error("Pointer is not exists");
         obj.forEach((y: object) => {
-          this.push(x, y);
+          return this.push(x, y);
         });
       });
     } catch (e) {console.error(e); return false;}
@@ -242,8 +245,21 @@ export class Database extends BaseClient {
 
   public deleteSeveralByKey(pointers: string[], keys: string[]) {
     pointers.forEach((x: string) => {
+      if(!this.CheckPointer(x)) throw new Error("Pointer is not exists");
       keys.forEach((y: string) => {
-        this.deleteByKey(x, y);
+        return this.deleteByKey(x, y);
+      });
+    });
+    return true;
+  }
+
+  public editSeveral(pointers: string[], keys: string[], value: unknown[]) {
+    pointers.forEach((x) => {
+      if(!this.CheckPointer(x)) throw new Error("Pointer is not exists");
+      keys.forEach((y) => {
+        value.forEach((z) => {
+          return this.editOneKey(x, y, z);
+        });
       });
     });
     return true;
