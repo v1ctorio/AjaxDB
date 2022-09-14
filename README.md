@@ -10,6 +10,7 @@
 import { Client } from 'ajax.db';
 
 const AjaxDB = new Client({ name: "Database name (It is recommended to put everything together)", path: "path/to/databases" });
+// IMPORTANT! not to put / at the end of path
 AjaxDB.CreateDatabase(); // Use if the database is not created - OUTPUT: boolean
 ```
 - Create pointer
