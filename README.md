@@ -4,6 +4,11 @@
 - Efficient and fast database using BSON.
 - Simple and easy to use
 
+# Installation
+```sh
+npm i ajax.db
+```
+
 # Examples:
 - Create Database & Start Client Instance:
 ```ts

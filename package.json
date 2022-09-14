@@ -1,7 +1,7 @@
 {
   "name": "ajax.db",
   "version": "1.9.2",
-  "description": "BeeDB inspired database",
+  "description": "BeeDB inspired database, Fast efficient database, uses BSON",
   "main": "out/index.js",
   "scripts": {
     "lint": "eslint . --ext .ts"
