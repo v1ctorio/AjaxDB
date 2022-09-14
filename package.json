@@ -8,6 +8,7 @@
   },
   "author": "PrintfDead",
   "license": "GNU GPL3",
+  "keywords": ["database", "ajaxdb", "bson", "efficient"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PrintfDead/AjaxDB.git"
