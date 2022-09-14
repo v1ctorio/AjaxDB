@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "outDir": "out",
+    "strict": true,
+    "allowJs": true,
+    "baseUrl": "./src",
+    "declaration": true,   
+    "sourceMap": true,
+    "declarationDir": "./typings",
+    "typeRoots": [
+      "node_modules/@types",
+      "mysql",
+      "bcryptjs",
+      "fs",
+      "discord.js",
+      "@discordjs/rest"
+    ],
+    "types": ["node"]
+  },
+  "lib": ["es2022"]
+}
