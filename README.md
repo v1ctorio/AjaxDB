@@ -1,5 +1,5 @@
 # @AjaxDB
-### (BeeDB)[https://github.com/theMarzon/BeeDB] inspired package
+### [BeeDB](https://github.com/theMarzon/BeeDB) inspired package
 # Information:
 - Efficient and fast database using BSON.
 - Simple and easy to use
