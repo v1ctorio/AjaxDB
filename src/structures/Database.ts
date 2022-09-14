@@ -19,6 +19,7 @@ export class Database extends BaseClient {
     this.options = options;
     this.name = options.name;
     this.path = this.options.path;
+    if(this.path.endsWith("/")) this.path = this.path.slice(0, -1);
 
     if (!this.CheckContainersDir()) this.CreateContainers();
     if (!this.CheckPointersDir()) this.CreatePointers();
@@ -124,7 +125,7 @@ export class Database extends BaseClient {
     return data;
   }
 
-  public findContainerData(keyOfPointer: string) {
+  public findContainer(keyOfPointer: string) {
     if(!this.CheckDatabaseDir()) {this.CreateDatabase(); console.error("Database is not exists, not find data"); return;}
     if(!this.CheckPointersDir()) {this.CreatePointers(); console.error("Pointers is not exists, not find data."); return;}
     if(!this.CheckContainersDir()) {this.CreateContainers(); console.error("Containers is not exists, not find data."); return;}
@@ -138,9 +139,9 @@ export class Database extends BaseClient {
     return BSON.deserialize(container); 
   }
 
-  public pushData(key: string, data: object) {
+  public push(key: string, data: object) {
     const pointer = this.findPointer(key);
-    let container = this.findContainerData(key);
+    let container = this.findContainer(key);
     if(!pointer) throw new Error("pointer is not exists");
     if(!container) throw new Error("container is not exists");
     
@@ -149,9 +150,9 @@ export class Database extends BaseClient {
     return true;
   }
 
-  public editKey(pointer: string, key: string, value: unknown) {
+  public editByKey(pointer: string, key: string, value: unknown) {
     const puntero = this.findPointer(pointer);
-    const container = this.findContainerData(pointer);
+    const container = this.findContainer(pointer);
     if(!puntero) throw new Error("pointer is not exists");
     if(!container) throw new Error("container is not exists");
     
@@ -162,9 +163,9 @@ export class Database extends BaseClient {
     return true;
   }
 
-  public deleteKey(pointer: string, key: string) {
+  public deleteByKey(pointer: string, key: string) {
     const puntero = this.findPointer(pointer);
-    const container = this.findContainerData(pointer);
+    const container = this.findContainer(pointer);
     if(!puntero) throw new Error("pointer is not exists");
     if(!container) throw new Error("container is not exists");
     
@@ -177,7 +178,7 @@ export class Database extends BaseClient {
 
   public getDataByKey(pointer: string, key: string) {
     const puntero = this.findPointer(pointer);
-    const container = this.findContainerData(pointer);
+    const container = this.findContainer(pointer);
     if(!puntero) throw new Error("pointer is not exists");
     if(!container) throw new Error("container is not exists");
     
@@ -188,12 +189,36 @@ export class Database extends BaseClient {
 
   public set(pointer: string, value: object) {
     const puntero = this.findPointer(pointer);
-    let container = this.findContainerData(pointer);
+    let container = this.findContainer(pointer);
     if(!puntero) throw new Error("pointer is not exists");
     if(!container) throw new Error("container is not exists");
 
-    container = value;
-    this.writeContainer(puntero.container, container)
+    container = Object.assign({ "pointer": pointer }, value);
+    this.writeContainer(puntero.container, container);
+    return true;
+  }
+
+  public get(pointer: string) {
+    return this.findContainer(pointer);
+  }
+
+  public getSeveral(pointers: string[]) {
+    let data: object = {};
+    pointers.forEach((x: string) => {
+      let container = this.findContainer(x);
+      Object.assign(data, container);
+    });
+    return data;
+  }
+
+  public pushSeveral(pointers: string[], obj: object[]) {
+    try{
+      pointers.forEach((x: string) => {
+        obj.forEach((y: object) => {
+          this.push(x, y);
+        });
+      });
+    } catch (e) {console.error(e); return false;}
     return true;
   }
 }

@@ -15,7 +15,8 @@ export interface Client {
 
 export class Client extends Database {
   constructor(options: options) {
-    super({name: options.name, path: options.path});    
+    super({name: options.name, path: options.path});
+    if(this.path.endsWith("/")) this.path = this.path.slice(0, -1);
     this.shortPath = this.path + "/ajax_databases/" + this.options.name;
       
     if(!fs.existsSync(this.path)) {
