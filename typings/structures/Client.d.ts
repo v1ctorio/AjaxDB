@@ -8,8 +8,6 @@ export interface Client {
 }
 export declare class Client extends Database {
     constructor(options: options);
-    protected CreatePointers(): void;
-    protected LoadPointers(): void;
     CreatePointer(key: string, containerName: string): void;
 }
 export {};

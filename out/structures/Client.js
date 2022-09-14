@@ -10,40 +10,21 @@ const bson_1 = __importDefault(require("bson"));
 class Client extends Database_1.Database {
     constructor(options) {
         super({ name: options.name, path: options.path });
-        this.shortPath = this.path + "/" + this.options.name;
+        if (this.path.endsWith("/"))
+            this.path = this.path.slice(0, -1);
+        this.shortPath = this.path + "/ajax_databases/" + this.options.name;
         if (!fs_1.default.existsSync(this.path)) {
             throw new Error("Path is not exists");
         }
-        if (!fs_1.default.existsSync(this.path + "/" + this.options.name + "/pointers")) {
+        if (!fs_1.default.existsSync(this.path + "/ajax_databases/")) {
+            fs_1.default.mkdir(this.path + "/ajax_databases/", (err) => {
+                if (err)
+                    return console.log(err);
+            });
+        }
+        if (!fs_1.default.existsSync(this.path + "/ajax_databases/" + this.options.name + "/pointers")) {
             this.CreatePointers();
         }
-    }
-    CreatePointers() {
-        fs_1.default.mkdir(this.path + "/" + this.options.name + "/pointers", (err) => {
-            if (err)
-                return console.error(err);
-        });
-        //if(!fs.existsSync(this.path + "/" + this.options.databaseName + "/containers")) {
-        //fs.mkdir(this.path + "/" + this.options.databaseName + "/containers", (err) => {
-        //if (err) return console.error(err);
-        //});
-        //}
-        return;
-    }
-    LoadPointers() {
-        let pointers = fs_1.default.readdirSync(this.path + "/" + this.options.name + "/pointers");
-        let pointerData;
-        let containerData;
-        for (const pointer of pointers) {
-            const data = fs_1.default.readFileSync(this.path + "/" + this.options.name + `/pointers/${pointer}`);
-            pointerData = this.ejson.deserialize(data);
-        }
-        let containers = fs_1.default.readdirSync(this.path + "/" + this.options.name + "/containers");
-        for (const container of containers) {
-            let data = fs_1.default.readFileSync(this.path + "/" + this.options.name + `/containers/${container}`);
-            containerData = this.ejson.deserialize(data);
-        }
-        this.data.set(pointerData.key, containerData);
     }
     CreatePointer(key, containerName) {
         if (fs_1.default.existsSync(this.shortPath + `/pointers/${key}.bson`)) {

@@ -21,11 +21,16 @@ export declare class Database extends BaseClient {
     protected writeContainer(container: string, value: object): void;
     protected writePointer(pointer: string, value: object): void;
     findPointer(key: string): any;
-    findContainerData(keyOfPointer: string): import("bson").Document | undefined;
-    pushData(key: string, data: object): boolean;
-    editKey(pointer: string, key: string, value: unknown): boolean;
-    deleteKey(pointer: string, key: string): boolean;
+    findContainer(keyOfPointer: string): import("bson").Document | undefined;
+    push(key: string, data: object): boolean;
+    editByKey(pointer: string, key: string, value: unknown): boolean;
+    deleteByKey(pointer: string, key: string): boolean;
     getDataByKey(pointer: string, key: string): any;
     set(pointer: string, value: object): boolean;
+    get(pointer: string): import("bson").Document | undefined;
+    getSeveral(pointers: string[]): object;
+    pushSeveral(pointers: string[], obj: object[]): boolean;
+    size(): number;
+    deleteSeveralByKey(pointers: string[], keys: string[]): boolean;
 }
 export {};
