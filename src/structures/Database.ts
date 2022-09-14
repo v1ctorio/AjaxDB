@@ -25,11 +25,11 @@ export class Database extends BaseClient {
   }
 
   public CreateDatabase() {
-    if (fs.existsSync(`${this.path}/${this.name}/`)) {
+    if (fs.existsSync(`${this.path}/ajax_databases/${this.name}/`)) {
       throw new Error("Path is exists");
     }
 
-    fs.mkdir(`${this.path}/${this.name}/`, (err) => {
+    fs.mkdir(`${this.path}/ajax_databases/${this.name}/`, (err) => {
       console.error(err);
     });
   }
@@ -43,7 +43,7 @@ export class Database extends BaseClient {
   }
   
   protected CheckPointersDir() {
-    if (fs.existsSync(`${this.path}/${this.name}/pointers`)) {
+    if (fs.existsSync(`${this.path}/ajax_databases/${this.name}/pointers`)) {
       return true;
     } else {
       return false;
@@ -51,7 +51,7 @@ export class Database extends BaseClient {
   }
 
   protected CheckContainersDir() {
-    if (fs.existsSync(`${this.path}/${this.name}/containers`)) {
+    if (fs.existsSync(`${this.path}/ajax_databases/${this.name}/containers`)) {
       return true;
     } else {
       return false;
@@ -59,7 +59,7 @@ export class Database extends BaseClient {
   }
 
   protected CheckPointer(pointer: string) {
-    if (fs.existsSync(`${this.path}/${this.name}/pointers/${pointer}.bson`)) {
+    if (fs.existsSync(`${this.path}/ajax_databases/${this.name}/pointers/${pointer}.bson`)) {
       return true;
     } else {
       return false;
@@ -68,9 +68,9 @@ export class Database extends BaseClient {
 
   protected CheckContainer(pointer: string) {
     if(this.CheckPointer(pointer)) {
-      const puntero = fs.readFileSync(`${this.path}/${this.name}/pointers/${pointer}.bson`);
+      const puntero = fs.readFileSync(`${this.path}/ajax_databases/${this.name}/pointers/${pointer}.bson`);
       const container = BSON.deserialize(puntero).container;
-      if (fs.existsSync(`${this.path}/${this.name}/containers/${container}.bson`)) {
+      if (fs.existsSync(`${this.path}/ajax_databases/${this.name}/containers/${container}.bson`)) {
         return true;
       } else {
         return false;
@@ -82,7 +82,7 @@ export class Database extends BaseClient {
 
   protected CreatePointers() {
     if (!this.CheckPointersDir())
-      fs.mkdir(this.path + "/" + this.name + "/pointers", (err) => {
+      fs.mkdir(this.path + "/ajax_databases/" + this.name + "/pointers", (err) => {
         if (err) return console.error(err);
       });
 
@@ -90,7 +90,7 @@ export class Database extends BaseClient {
   }
 
   protected CreateContainers() {
-    if(!fs.existsSync(this.path + "/" + this.name + "/containers")) {
+    if(!fs.existsSync(this.path + "/ajax_databases/" + this.name + "/containers")) {
       fs.mkdir(this.path + "/" + this.name + "/containers", (err) => {
         if (err) return console.error(err);
       });
@@ -100,11 +100,11 @@ export class Database extends BaseClient {
   }
 
   protected writeContainer(container: string, value: object) {
-    fs.writeFileSync(`${this.path}/${this.name}/containers/${container}.bson`, BSON.serialize(value));
+    fs.writeFileSync(`${this.path}/ajax_databases/${this.name}/containers/${container}.bson`, BSON.serialize(value));
   }
 
   protected writePointer(pointer: string, value: object) {
-    fs.writeFileSync(`${this.path}/${this.name}/pointers/${pointer}.bson`, BSON.serialize(value));
+    fs.writeFileSync(`${this.path}/ajax_databases/${this.name}/pointers/${pointer}.bson`, BSON.serialize(value));
   }
 
   public findPointer(key: string) {
@@ -114,10 +114,10 @@ export class Database extends BaseClient {
     
     let data: any;
     if(!this.CheckPointer(key)) throw new Error("Pointer is not exists");
-    const pointersDir = fs.readdirSync(`${this.path}/${this.name}/pointers`);
+    const pointersDir = fs.readdirSync(`${this.path}/ajax_databases/${this.name}/pointers`);
     for (const pointerFile of pointersDir) {
       if(pointerFile.slice(0, -5) !== key) continue;
-      const pointer = fs.readFileSync(`${this.path}/${this.name}/pointers/${pointerFile}`);
+      const pointer = fs.readFileSync(`${this.path}/ajax_databases/${this.name}/pointers/${pointerFile}`);
       data = BSON.deserialize(pointer); 
     }
     
@@ -133,7 +133,7 @@ export class Database extends BaseClient {
 
     let pointer = this.findPointer(key);
     if(!this.CheckContainer(key)) throw new Error("Container is not exists");
-    const container = fs.readFileSync(`${this.path}/${this.name}/containers/${pointer.container}.bson`);
+    const container = fs.readFileSync(`${this.path}/ajax_databases/${this.name}/containers/${pointer.container}.bson`);
 
     return BSON.deserialize(container); 
   }
