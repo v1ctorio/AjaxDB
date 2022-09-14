@@ -24,7 +24,7 @@ AjaxDB.CreatePointer("PointerName", "ContainerName"); //It is recommended to put
 ```
 - `push`
 ```ts
-AjaxDB.pushData("PointerName", { "...": ... }); // This method is used to add elements, it accepts an object with any data type as long as it follows the syntax. (IMPORTANT: the key must be defined in quotes) OUTPUT: boolean
+AjaxDB.push("PointerName", { "...": ... }); // This method is used to add elements, it accepts an object with any data type as long as it follows the syntax. (IMPORTANT: the key must be defined in quotes) OUTPUT: boolean
 ```
 - `set`
 ```ts
@@ -34,11 +34,11 @@ AjaxDB.set("PointerName", { "name": "Printf" }); // Container = { "name": "Print
 ```
 - `editByKey`
 ```ts
-AjaxDB.editKey("PointerName", "KeyOfContainer", "value"); // edit the data of a single data OUTPUT: boolean
+AjaxDB.editByKey("PointerName", "KeyOfContainer", "value"); // edit the data of a single data OUTPUT: boolean
 ```
 - `deleteByKey`
 ```ts
-AjaxDB.deleteKey("PointerName", "Key"); // delete key OUTPUT: boolean
+AjaxDB.deleteByKey("PointerName", "Key"); // delete key OUTPUT: boolean
 ```
 - `getDataByKey`
 ```ts
