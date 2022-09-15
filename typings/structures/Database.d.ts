@@ -1,5 +1,6 @@
 import { BaseClient } from './BaseClient';
 declare type options = {
+    database: string;
     path: string;
 };
 export interface Database {
@@ -9,8 +10,6 @@ export interface Database {
 }
 export declare class Database extends BaseClient {
     constructor(options: options);
-    CreateDatabase(name: string): string;
-    SelectDatabase(name: string): void;
     protected CheckDatabaseDir(): boolean;
     protected CheckPointersDir(): boolean;
     protected CheckContainersDir(): boolean;
@@ -31,6 +30,7 @@ export declare class Database extends BaseClient {
     getSeveral(pointers: string[]): object;
     pushSeveral(pointers: string[], obj: object[]): boolean;
     size(): number;
+    sizeContainersByPointer(pointer: string): number;
     deleteSeveralByKey(pointers: string[], keys: string[]): boolean;
     editSeveral(pointers: string[], keys: string[], value: unknown[]): boolean;
 }

@@ -11,31 +11,10 @@ class Database extends BaseClient_1.BaseClient {
     constructor(options) {
         super();
         this.options = options;
-        this.database = 'example';
+        this.database = options.database;
         this.path = this.options.path;
         if (this.path.endsWith("/"))
             this.path = this.path.slice(0, -1);
-        if (!this.CheckContainersDir())
-            this.CreateContainers();
-        if (!this.CheckPointersDir())
-            this.CreatePointers();
-    }
-    CreateDatabase(name) {
-        if (fs_1.default.existsSync(`${this.path}/ajax_databases/${name}/`)) {
-            this.database = name;
-        }
-        else {
-            fs_1.default.mkdir(`${this.path}/ajax_databases/${name}/`, (err) => {
-                console.error(err);
-            });
-        }
-        return this.database = name;
-    }
-    SelectDatabase(name) {
-        if (!fs_1.default.existsSync(`${this.path}/ajax_databases/${name}`)) {
-            this.CreateDatabase(name);
-        }
-        this.database = name;
     }
     CheckDatabaseDir() {
         if (fs_1.default.existsSync(this.path)) {
@@ -46,6 +25,7 @@ class Database extends BaseClient_1.BaseClient {
         }
     }
     CheckPointersDir() {
+        console.log(this.database);
         if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`)) {
             return true;
         }
@@ -54,12 +34,11 @@ class Database extends BaseClient_1.BaseClient {
         }
     }
     CheckContainersDir() {
-        if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers`)) {
-            return true;
-        }
-        else {
+        console.log(this.database);
+        if (!fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers`)) {
             return false;
         }
+        return true;
     }
     CheckPointer(pointer) {
         if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`)) {
@@ -86,15 +65,13 @@ class Database extends BaseClient_1.BaseClient {
     }
     CreatePointers() {
         if (!this.CheckPointersDir())
-            fs_1.default.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", (err) => {
-                if (err)
-                    return console.error(err);
-            });
+            fs_1.default.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", (err) => { if (err)
+                return console.error(err); });
         return;
     }
     CreateContainers() {
         if (!fs_1.default.existsSync(this.path + "/ajax_databases/" + this.database + "/containers")) {
-            fs_1.default.mkdir(this.path + "/" + this.database + "/containers", (err) => {
+            fs_1.default.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, (err) => {
                 if (err)
                     return console.error(err);
             });
@@ -163,7 +140,6 @@ class Database extends BaseClient_1.BaseClient {
             throw new Error("pointer is not exists");
         if (!container)
             throw new Error("container is not exists");
-        container = Object.assign(container, data);
         this.writeContainer(pointer.container, container);
         return true;
     }
@@ -254,6 +230,20 @@ class Database extends BaseClient_1.BaseClient {
             count += 1;
         }
         return count;
+    }
+    sizeContainersByPointer(pointer) {
+        if (!this.CheckPointer(pointer))
+            return 0;
+        let containers = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
+        let size = 0;
+        for (const container of containers) {
+            let containerFile = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
+            let data = bson_1.default.deserialize(containerFile);
+            if (data.pointer === pointer) {
+                size += 1;
+            }
+        }
+        return size;
     }
     deleteSeveralByKey(pointers, keys) {
         pointers.forEach((x) => {

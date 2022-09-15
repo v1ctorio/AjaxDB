@@ -14,14 +14,9 @@ npm i ajax.db
 ```ts
 import { Client } from 'ajax.db';
 
-const AjaxDB = new Client({ path: "path/to/databases" });
-// IMPORTANT! not to put / at the end of path
-AjaxDB.CreateDatabase("DatabaseName"); // Use if the database is not created - OUTPUT: boolean
-```
-- `SelectDatabase`
-```ts
-//Use if database exist
-AjaxDB.SelectDatabase("DatabaseName");
+const AjaxDB = new Client({ database: "DatabaseName", path: "path/to/databases" });
+
+// Instance new Client for create new database or use a database.
 ```
 - `CreatePointer`
 ```ts

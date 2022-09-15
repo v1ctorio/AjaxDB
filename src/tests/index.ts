@@ -1,12 +1,6 @@
 import { Client } from '../index';
 
-const AjaxDB = new Client({ path: __dirname+"/../.." }); // Important! do not put / at the end of the path
-
-AjaxDB.CreateDatabase("DatabaseName"); // Use only if database does not exist.
-
-// if database exist
-
-AjaxDB.SelectDatabase("DatabaseName");
+const AjaxDB = new Client({ database: "DatabaseName", path: __dirname+"/../.." }); // Important! do not put / at the end of the path
 
 AjaxDB.CreatePointer('Pointer', 'Container');
 
@@ -24,14 +18,14 @@ console.log(AjaxDB.findPointer('Pointer')); // output: pointer data
 
 console.log(AjaxDB.findContainer('Pointer')); // output: container data
 
-console.log(AjaxDB.get("PointerName")); // OUTPUT: key data
+//console.log(AjaxDB.get("PointerName")); // OUTPUT: key data
 
-console.log(AjaxDB.getSeveral(["Pointer1", "Pointer2", "Pointer3"])); // OUTPUT: object
+//console.log(AjaxDB.getSeveral(["Pointer1", "Pointer2", "Pointer3"])); // OUTPUT: object
 
-AjaxDB.pushSeveral(["Pointer1", "Pointer2", "Pointer3"], [{}, {}, {}]); // OUTPUT: boolean
+//AjaxDB.pushSeveral(["Pointer1", "Pointer2", "Pointer3"], [{}, {}, {}]); // OUTPUT: boolean
 
 AjaxDB.size() // OUTPUT: number
 
-AjaxDB.deleteSeveralByKey(["Pointer1", "Pointer2"], ["Key1", "Key2"]); // OUTPUT: boolean
+//AjaxDB.deleteSeveralByKey(["Pointer1", "Pointer2"], ["Key1", "Key2"]); // OUTPUT: boolean
 
-AjaxDB.editSeveral(["Pointer1", "Pointer2"], ["Key1", "Key2"], ["Value1", "Value2"]);
+//AjaxDB.editSeveral(["Pointer1", "Pointer2"], ["Key1", "Key2"], ["Value1", "Value2"]);
