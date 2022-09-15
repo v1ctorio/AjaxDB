@@ -3,7 +3,7 @@
 # Information:
 - :wrench: Efficient and fast database using BSON.
 - :butterfly: Simple and easy to use
-- :slight_smile: Version 2.0
+- :smile: Version 2.0
 
 # Installation
 ```sh
