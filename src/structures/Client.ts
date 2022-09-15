@@ -26,25 +26,25 @@ export class Client extends Database {
     }
 
     if(!fs.existsSync(this.path+"/ajax_databases/")) {
-      fs.mkdir(this.path+"/ajax_databases/", (err) => {
+      fs.promises.mkdir(this.path+"/ajax_databases/", {recursive: true}).catch((err) => {
         if (err) return console.log(err);
       });
     }
 
     if(!fs.existsSync(this.shortPath)) {
-      fs.mkdir(this.shortPath, (err) => {
-        if (err) return console.error(err);
-      });
+      fs.promises.mkdir(this.shortPath, {recursive: true}).catch((e) => console.error(e));
     }
     
     if(!fs.existsSync(this.path + "/ajax_databases/" + this.database + "/pointers")) {
       this.CreatePointers();
     }
+
+    if(!fs.existsSync(this.shortPath+"/containers")){
+      this.CreateContainers();
+    }
   }
   
   public CreatePointer(key: string, containerName: string) {
-    if (!this.CheckContainersDir()) this.CreateContainers();
-    if (!this.CheckPointersDir()) this.CreatePointers();
     if (fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${key}.bson`)) console.error("Pointer is exist");
     if (fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${containerName}.bson`)) throw new Error("Container is exist");
 
@@ -54,11 +54,17 @@ export class Client extends Database {
     }
     const containerData = {
       "pointer": key,
+      "containers": [] 
     }
-
-    fs.writeFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${key}.bson`, BSON.serialize(pointerData));
-    fs.writeFileSync(`${this.path}/ajax_databases/${this.database}/containers/${containerName}.bson`, BSON.serialize(containerData));
-
+    
+    fs.promises.mkdir(`${this.path}/ajax_databases/${this.database}/pointers`, { recursive: true })
+      .then((x) => {
+        fs.promises.writeFile(`${this.shortPath}/pointers/${key}.bson`, BSON.serialize(pointerData));
+      }).catch((err) => console.error(err));
+    fs.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true })
+      .then((x) => {
+        fs.promises.writeFile(`${this.shortPath}/containers/${containerName}.bson`, BSON.serialize(containerData));
+      }).catch((err) => console.error(err));
     return;
   }
 }
