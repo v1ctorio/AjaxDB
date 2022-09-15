@@ -3,6 +3,7 @@
 # Information:
 - :wrench: Efficient and fast database using BSON.
 - :butterfly: Simple and easy to use
+- :slight_smile: Version 2.0
 
 # Installation
 ```sh
@@ -24,25 +25,15 @@ AjaxDB.CreatePointer("PointerName", "ContainerName"); //It is recommended to put
 ```
 - `push`
 ```ts
-AjaxDB.push("PointerName", { "...": ... }); // This method is used to add elements, it accepts an object with any data type as long as it follows the syntax. (IMPORTANT: the key must be defined in quotes) OUTPUT: boolean
-```
-- `set`
-```ts
-AjaxDB.set("PointerName", { "...": ... }); // Be careful, this method modifies all elements. OUTPUT: boolean
-// Example of set (My Container = { "name": "Printf", "lastname": "Dead" })
-AjaxDB.set("PointerName", { "name": "Printf" }); // Container = { "name": "Printf" }
-```
-- `editOneKey`
-```ts
-AjaxDB.editOneKey("PointerName", "KeyOfContainer", "value"); // edit the data of a single data OUTPUT: boolean
+AjaxDB.push("PointerName", { "id": number | string, "content": object }, AUTO_INCREMENT: boolean); // If AUTO_INCREMENT is true it is not necessary to declare the id, content is required 
 ```
 - `deleteByKey`
 ```ts
-AjaxDB.deleteByKey("PointerName", "Key"); // delete key OUTPUT: boolean
+AjaxDB.deleteByKey("PointerName", "KeyName"); //  OUTPUT: boolean
 ```
-- `getDataByKey`
+- `deleteSeveralByKey`
 ```ts
-console.log(AjaxDB.getDataByKey("PointerName", "key")); // OUTPUT: key data
+AjaxDB.deleteByKey(["Pointers"...], ["Keys"...]); // OUTPUT: boolean
 ```
 - `findPointer`
 ```ts
@@ -54,27 +45,19 @@ console.log(AjaxDB.findContainer("PointerName")); // OUTPUT: Container data
 ```
 - `get`
 ```ts
-console.log(AjaxDB.get("PointerName"); // OUTPUT: key data
-```
-- `getSeveral`
-```ts
-console.log(AjaxDB.getSeveral(["Pointer1", "Pointer2", "Pointer3", ...])); // OUTPUT: object
-```
-- `pushSeveral`
-```ts
-AjaxDB.pushSeveral(["Pointer1", "Pointer2", "Pointer3"], [{...}, {...}, {...}]); // OUTPUT: boolean
+console.log(AjaxDB.get("PointerName", { "KeyName": "KeyValue" }); // OUTPUT: key data
 ```
 - `size`
 ```ts
 AjaxDB.size() // OUTPUT: number
 ```
+- `edit`
+```ts
+AjaxDB.edit("PointerName", { "FindKey": "ValueKey" }, { "key": "KeyName", "value": "ValueForKey" });
+```
 - `deleteSeveralByKey`
 ```ts
-AjaxDB.deleteSeveralByKey(["Pointer1", "Pointer2"], ["Key1", "Key2"]); // OUTPUT: boolean
-```
-- `editSeveral`
-```ts
-AjaxDB.editSeveral(["Pointers"...], ["Keys"...], ["Values"...]); // OUTPUT: boolean
+AjaxDB.deleteSeveralByKey(["Pointers"...], ["Keys"...]);
 ```
 
 ## Development notes

@@ -8,6 +8,14 @@ export interface Database {
     options: options;
     path: string;
 }
+declare type dataPush = {
+    id?: string | number;
+    content: object;
+};
+declare type editKey = {
+    key: string;
+    value: string;
+};
 export declare class Database extends BaseClient {
     constructor(options: options);
     protected CheckDatabaseDir(): boolean;
@@ -21,17 +29,13 @@ export declare class Database extends BaseClient {
     protected writePointer(pointer: string, value: object): void;
     findPointer(key: string): any;
     findContainer(keyOfPointer: string): import("bson").Document | undefined;
-    push(key: string, data: object): boolean;
-    editOneKey(pointer: string, key: string, value: unknown): boolean;
+    push(key: string, data: dataPush, AUTO_INCREMENT?: boolean): boolean;
+    protected sizeContainers(pointer: string): number;
     deleteByKey(pointer: string, key: string): boolean;
-    getDataByKey(pointer: string, key: string): any;
-    set(pointer: string, value: object): boolean;
-    get(pointer: string): import("bson").Document | undefined;
-    getSeveral(pointers: string[]): object;
-    pushSeveral(pointers: string[], obj: object[]): boolean;
+    get(pointer: string, value: object): undefined;
+    edit(pointer: string, findKey: object, editKey: editKey): void;
     size(): number;
-    sizeContainersByPointer(pointer: string): number;
+    sizeContainer(pointer: string): number;
     deleteSeveralByKey(pointers: string[], keys: string[]): boolean;
-    editSeveral(pointers: string[], keys: string[], value: unknown[]): boolean;
 }
 export {};
