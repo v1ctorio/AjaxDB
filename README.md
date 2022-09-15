@@ -33,7 +33,7 @@ AjaxDB.deleteByKey("PointerName", "KeyName"); //  OUTPUT: boolean
 ```
 - `deleteSeveralByKey`
 ```ts
-AjaxDB.deleteByKey(["Pointers"...], ["Keys"...]); // OUTPUT: boolean
+AjaxDB.deleteSeveralByKey(["Pointers"...], ["Keys"...]); // OUTPUT: boolean
 ```
 - `findPointer`
 ```ts
@@ -54,10 +54,6 @@ AjaxDB.size() // OUTPUT: number
 - `edit`
 ```ts
 AjaxDB.edit("PointerName", { "FindKey": "ValueKey" }, { "key": "KeyName", "value": "ValueForKey" });
-```
-- `deleteSeveralByKey`
-```ts
-AjaxDB.deleteSeveralByKey(["Pointers"...], ["Keys"...]);
 ```
 
 ## Development notes
