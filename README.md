@@ -21,7 +21,7 @@ const AjaxDB = new Client({ database: "DatabaseName", path: "path/to/databases" 
 
 // Data is optional
 
-AjaxDB.on('start', (data) => {
+AjaxDB.on('start', () => {
   console.log("AjaxDB start!");
 });
 
@@ -32,31 +32,23 @@ AjaxDB.on('error', (error) => {
 ```
 - `CreatePointer`
 ```ts
-AjaxDB.CreatePointer("PointerName", "ContainerName"); //It is recommended to put everything together
+await AjaxDB.CreatePointer("PointerName", "ContainerName"); //It is recommended to put everything together
 ```
 - `push`
 ```ts
-AjaxDB.push("PointerName", { "id": number | string, "content": object }, AUTO_INCREMENT: boolean); // If AUTO_INCREMENT is true it is not necessary to declare the id, content is required 
+await AjaxDB.push("PointerName", { "id": number | string, "content": object }, AUTO_INCREMENT: boolean); // If AUTO_INCREMENT is true it is not necessary to declare the id, content is required 
 ```
 - `deleteByKey`
 ```ts
-AjaxDB.deleteByKey("PointerName", "KeyName"); // void
+await AjaxDB.deleteByKey("PointerName", "KeyName"); // void
 ```
 - `deleteSeveralByKey`
 ```ts
-AjaxDB.deleteSeveralByKey(["Pointers"...], ["Keys"...]); // void
-```
-- `findPointer`
-```ts
-console.log(AjaxDB.findPointer("PointerName")); // OUTPUT: Pointer data
-```
-- `findContainer`
-```ts
-console.log(AjaxDB.findContainer("PointerName")); // OUTPUT: Container data
+await AjaxDB.deleteSeveralByKey(["Pointers"...], ["Keys"...]); // void
 ```
 - `get`
 ```ts
-console.log(AjaxDB.get("PointerName", { "KeyName": "KeyValue" }); // OUTPUT: object / complete container data
+await AjaxDB.get("PointerName", { "KeyName": "KeyValue" }); // OUTPUT: object / complete container data
 
 ```
 > OUTPUT EXAMPLE:
@@ -74,7 +66,7 @@ AjaxDB.size() // OUTPUT: number
 ```
 - `edit`
 ```ts
-AjaxDB.edit("PointerName", { "FindKey": "ValueKey" }, { "key": "KeyName", "value": "ValueForKey" }); // void
+await AjaxDB.edit("PointerName", { "FindKey": "ValueKey" }, { "key": "KeyName", "value": "ValueForKey" }); // void
 ```
 
 ## Development notes
