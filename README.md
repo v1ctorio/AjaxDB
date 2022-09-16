@@ -40,11 +40,11 @@ AjaxDB.push("PointerName", { "id": number | string, "content": object }, AUTO_IN
 ```
 - `deleteByKey`
 ```ts
-AjaxDB.deleteByKey("PointerName", "KeyName"); //  OUTPUT: boolean
+AjaxDB.deleteByKey("PointerName", "KeyName"); // void
 ```
 - `deleteSeveralByKey`
 ```ts
-AjaxDB.deleteSeveralByKey(["Pointers"...], ["Keys"...]); // OUTPUT: boolean
+AjaxDB.deleteSeveralByKey(["Pointers"...], ["Keys"...]); // void
 ```
 - `findPointer`
 ```ts
@@ -56,7 +56,17 @@ console.log(AjaxDB.findContainer("PointerName")); // OUTPUT: Container data
 ```
 - `get`
 ```ts
-console.log(AjaxDB.get("PointerName", { "KeyName": "KeyValue" }); // OUTPUT: key data
+console.log(AjaxDB.get("PointerName", { "KeyName": "KeyValue" }); // OUTPUT: object / complete container data
+
+```
+> OUTPUT EXAMPLE:
+```json
+{
+  id: number | string,
+  content: {
+    ...
+  }
+}
 ```
 - `size`
 ```ts
@@ -64,7 +74,7 @@ AjaxDB.size() // OUTPUT: number
 ```
 - `edit`
 ```ts
-AjaxDB.edit("PointerName", { "FindKey": "ValueKey" }, { "key": "KeyName", "value": "ValueForKey" });
+AjaxDB.edit("PointerName", { "FindKey": "ValueKey" }, { "key": "KeyName", "value": "ValueForKey" }); // void
 ```
 
 ## Development notes

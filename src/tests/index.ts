@@ -2,28 +2,24 @@ import { Client } from '../index';
 
 const AjaxDB = new Client({ database: "DatabaseName", path: __dirname+"/../.." }); // Important! do not put / at the end of the path
 
-AjaxDB.on('start', () => {
-  console.log("Database connected");
-});
+const code = async () => {
+  //await AjaxDB.CreatePointer('Pointer', 'Container'); 
+  //await AjaxDB.push('Pointer', { "content": { "name": "Printf", "lastname": "Dead" } }, true); // Use to sotre new data without affecting the others - output: boolean
+  await AjaxDB.get('Pointer', { "name": "Printf" }).then(x => console.log(x));
+};
 
-AjaxDB.on('error', (error) => {
-  console.error(error);
-});
+code();
 
-AjaxDB.CreatePointer('Pointer', 'Container');
+//AjaxDB.deleteByKey('Pointer', 'lastname'); // delete key - output: boolean
 
-AjaxDB.push('Pointer', { "content": { "name": "Printf", "lastname": "Dead" } }, true); // Use to sotre new data without affecting the others - output: boolean
+//console.log(AjaxDB.findPointer('Pointer')); // output: pointer data
 
-AjaxDB.deleteByKey('Pointer', 'lastname'); // delete key - output: boolean
+//console.log(AjaxDB.findContainer('Pointer')); // output: container data
 
-console.log(AjaxDB.findPointer('Pointer')); // output: pointer data
+//console.log(AjaxDB.get("Pointer", { "name": "Printf" })); // OUTPUT: key data
 
-console.log(AjaxDB.findContainer('Pointer')); // output: container data
+//AjaxDB.size() // OUTPUT: number
 
-console.log(AjaxDB.get("Pointer", { "name": "Printf" })); // OUTPUT: key data
+//AjaxDB.edit("Pointer", { "name": "Printf" }, { "key": "lastname", "value": "XD" });
 
-AjaxDB.size() // OUTPUT: number
-
-AjaxDB.edit("Pointer", { "name": "Printf" }, { "key": "lastname", "value": "XD" });
-
-AjaxDB.deleteSeveralByKey(["Pointer", "Pointer2"], ["Name", "Lastname"])
+//AjaxDB.deleteSeveralByKey(["Pointer", "Pointer2"], ["Name", "Lastname"])

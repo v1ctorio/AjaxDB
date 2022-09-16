@@ -11,6 +11,7 @@ export interface Client {
 }
 export declare class Client extends Database {
     constructor(options: options);
-    CreatePointer(key: string, containerName: string): void;
+    protected CheckAndCreateFolders(): Promise<void>;
+    CreatePointer(key: string, containerName: string): Promise<void>;
 }
 export {};

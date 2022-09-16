@@ -1,1 +1,1 @@
-{"version":3,"file":"BaseClient.js","sourceRoot":"","sources":["../../src/structures/BaseClient.ts"],"names":[],"mappings":";;;AAAA,+BAA6B;AAC7B,6CAA2C;AAa3C,MAAa,UAAW,SAAQ,0BAAY;IAC1C;QACE,KAAK,EAAE,CAAC;QACR,IAAI,CAAC,KAAK,GAAG,YAAK,CAAC;IACrB,CAAC;CACF;AALD,gCAKC"}
+{"version":3,"file":"BaseClient.js","sourceRoot":"","sources":["../../src/structures/BaseClient.ts"],"names":[],"mappings":";;;AAAA,+BAA6B;AAC7B,6CAA2C;AAY3C,MAAa,UAAW,SAAQ,0BAAY;IAC1C;QACE,KAAK,EAAE,CAAC;QACR,IAAI,CAAC,KAAK,GAAG,YAAK,CAAC;IACrB,CAAC;CACF;AALD,gCAKC"}

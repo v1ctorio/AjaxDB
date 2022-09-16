@@ -77,15 +77,15 @@ export class Database extends BaseClient {
     }
   }
 
-  protected CreatePointers() {
-    if (!this.CheckPointersDir()) fs.promises.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", {recursive:true}).catch((err) => { if (err) this.emit("error", err); });
+  protected async CreatePointers() {
+    if (!this.CheckPointersDir()) await fs.promises.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", {recursive:true}).catch((err) => { if (err) this.emit("error", err); });
 
     return;
   }
 
-  protected CreateContainers() {
+  protected async CreateContainers() {
     if(!fs.existsSync(this.path + "/ajax_databases/" + this.database + "/containers")) {
-      fs.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, {recursive: true}).catch((err) => { 
+      await fs.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, {recursive: true}).catch((err) => { 
         if (err) this.emit("error", err);
       });
     }
@@ -101,10 +101,10 @@ export class Database extends BaseClient {
     fs.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, BSON.serialize(value), (err)=>{ if (err) this.emit("error", err); });
   }
 
-  public findPointer(key: string) {
+  public async findPointer(key: string) {
     if(!this.CheckDatabaseDir()) {console.error("Database is not exists, not find data"); return;}
-    if(!this.CheckPointersDir()) {this.CreatePointers(); console.error("Pointers is not exists, not find data."); return;}
-    if(!this.CheckContainersDir()) {this.CreateContainers(); console.error("Containers is not exists, not find data."); return;}
+    if(!this.CheckPointersDir()) {await this.CreatePointers(); return;}
+    if(!this.CheckContainersDir()) {await this.CreateContainers(); console.error("Containers is not exists, not find data."); return;}
     
     let data: any;
     if(!this.CheckPointer(key)) throw new Error("Pointer is not exists");
@@ -118,29 +118,34 @@ export class Database extends BaseClient {
     return data;
   }
 
-  public findContainer(keyOfPointer: string) {
+  public async findContainer(keyOfPointer: string) {
     if(!this.CheckDatabaseDir()) {console.error("Database is not exists, not find data"); return;}
-    if(!this.CheckPointersDir()) {this.CreatePointers(); console.error("Pointers is not exists, not find data."); return;}
-    if(!this.CheckContainersDir()) {this.CreateContainers(); console.error("Containers is not exists, not find data."); return;}
+    if(!this.CheckPointersDir()) {await this.CreatePointers(); console.error("Pointers is not exists, not find data."); return;}
+    if(!this.CheckContainersDir()) {await this.CreateContainers(); console.error("Containers is not exists, not find data."); return;}
 
     const key = keyOfPointer;
 
-    let pointer = this.findPointer(key);
+    let pointer = await this.findPointer(key).catch((err) => console.error(err));
     if(!this.CheckContainer(key)) throw new Error("Container is not exists");
     const container = fs.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${pointer.container}.bson`);
     
     return BSON.deserialize(container); 
   }
 
-  public push(key: string, data: dataPush, AUTO_INCREMENT?: boolean) {
-    const pointer = this.findPointer(key);
-    let container = this.findContainer(key);
+  public async push(key: string, data: dataPush, AUTO_INCREMENT?: boolean) {
+    const pointer = await this.findPointer(key).catch(err => console.error(err));
+    let container = await this.findContainer(key).catch(err => console.error(err));
     if(!pointer) throw new Error("pointer is not exists");
     if(!container) throw new Error("container is not exists");
-
+    
+    let size = 0;
+    await this.sizeContainers(key).then(x => {
+      size = x;
+    }).catch(err => console.error(err));
+  
     if (AUTO_INCREMENT) {
       let newContainer = {
-        "id": this.sizeContainers(key)+1,
+        "id": size+1,
         "content": data.content
       }
       container.containers.push(newContainer);
@@ -154,11 +159,10 @@ export class Database extends BaseClient {
     }
 
     this.writeContainer(pointer.container, container);
-    return true;
   }
 
-  protected sizeContainers(pointer: string) {
-    const container = this.findContainer(pointer);
+  protected async sizeContainers(pointer: string) {
+    const container = await this.findContainer(pointer).catch(err => console.error("error", err));
     if(!container) throw new Error("container is not exists");
     let size = 0;  
 
@@ -171,9 +175,9 @@ export class Database extends BaseClient {
     return size;
   }
 
-  public deleteByKey(pointer: string, key: string) {
-    const puntero = this.findPointer(pointer);
-    const container = this.findContainer(pointer);
+  public async deleteByKey(pointer: string, key: string) {
+    const puntero = await this.findPointer(pointer).catch(err => console.error("error", err));
+    const container = await this.findContainer(pointer).catch(err => console.error("error", err));
     if(!puntero) throw new Error("pointer is not exists");
     if(!container) throw new Error("container is not exists");
     
@@ -181,30 +185,40 @@ export class Database extends BaseClient {
       if(x.content[key]) delete container.containers[y].content[key]
     });
     this.writeContainer(puntero.container, container);
-    return true;
   }
-  public get(pointer: string, value: object) {
-    let container = this.findContainer(pointer);
+
+  public async get(pointer: string, value: object | any) {
+    let c = await this.findContainer(pointer).catch(err => console.error(err));
     let data = Object.keys(value);
-    let result;
-    if(!container) throw new Error("Container is not exist");
-    container.containers.forEach((x: object, y: number) => {
-      if(data.find((key: any) => key.id)) {
-        result = data.filter((key: any) => key.id === container?.containers[y].id);
-        if (!result) return null;
-        return;
-      }
-      let content = data.find(key => container?.containers[y].content[key]);
-      if(!content) return;
-      let filter = data.filter(key => key === container?.containers[y].content[key]);
-      result = filter;
+    let entries = Object.entries(value);
+    let result: object = {};
+    if(!c) throw new Error("Container is not exist");
+    
+    c.containers.forEach((container: object | any) => {
+      data.forEach((key: string, index: number) => {
+        if (data.find(key => key === "id")) {
+          if (container.id === value.id) {
+            result = container;
+          }
+        }
+        
+        let keys = Object.keys(container.content);
+        keys.forEach(x => {
+          if (x === key) {
+            if (entries[index][1] === container.content[x]) {
+              result = container;
+            }
+          }
+        });
+      });
     });
+
     return result;
   }
 
-  public edit(pointer: string, findKey: object, editKey: editKey) {
-    let pointerData = this.findPointer(pointer);
-    let container = this.findContainer(pointer);
+  public async edit(pointer: string, findKey: object, editKey: editKey) {
+    let pointerData = await this.findPointer(pointer).catch(err => console.error(err));
+    let container = await this.findContainer(pointer).catch(err => console.error(err));
     if(!container) throw new Error("Container is not exists");
     if(!pointer) throw new Error("Pointer is not exist");
     let dataKey = this.get(pointer, findKey);
