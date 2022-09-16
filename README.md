@@ -60,7 +60,7 @@ console.log(AjaxDB.get("PointerName", { "KeyName": "KeyValue" }); // OUTPUT: obj
 
 ```
 > OUTPUT EXAMPLE:
-```json
+```js
 {
   id: number | string,
   content: {
