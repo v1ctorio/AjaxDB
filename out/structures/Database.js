@@ -151,7 +151,7 @@ class Database extends BaseClient_1.BaseClient {
             container.containers.push(newContainer);
         }
         else {
-            if (!Object.keys(data).find((Key) => Key["id"]))
+            if (!Object.keys(data).find((Key) => Key === "id"))
                 throw new Error("Not defined \"id\" property");
             let newContainer = {
                 "id": data.id,
@@ -166,10 +166,8 @@ class Database extends BaseClient_1.BaseClient {
         if (!container)
             throw new Error("container is not exists");
         let size = 0;
-        container.containers.forEach((x) => {
-            let data = Object.keys(x).filter((key) => typeof key.id === "number");
-            if (data)
-                size += 1;
+        container.containers.forEach(() => {
+            size += 1;
         });
         return size;
     }
