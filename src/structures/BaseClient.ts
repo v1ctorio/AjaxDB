@@ -1,22 +1,20 @@
-import BSON, { EJSON } from 'bson';
+import { EJSON } from 'bson';
 import { EventEmitter } from 'node:events';
-import fs from 'fs';
+import { Client } from './Client';
 
 type ejson = typeof EJSON;
 
+type ErrorClient = string | number | object | undefined;
+
 export interface BaseClient {
   ejson: ejson;
-  data: Map<string | number, object>;
+  on(event: 'error', listener: (error: ErrorClient) => void): this;
+  on(event: 'start', listener: (data?: Client) => void): this;
 }
 
 export class BaseClient extends EventEmitter {
   constructor() {
     super();
-    this.data = new Map();
     this.ejson = EJSON;
-  }
-  
-  public find(key: string | number) {
-    
   }
 }

@@ -78,7 +78,7 @@ export class Database extends BaseClient {
   }
 
   protected CreatePointers() {
-    if (!this.CheckPointersDir()) fs.promises.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", {recursive:true}).catch((err) => { if (err) return console.error(err); });
+    if (!this.CheckPointersDir()) fs.promises.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", {recursive:true}).catch((err) => { if (err) this.emit("error", err); });
 
     return;
   }
@@ -86,7 +86,7 @@ export class Database extends BaseClient {
   protected CreateContainers() {
     if(!fs.existsSync(this.path + "/ajax_databases/" + this.database + "/containers")) {
       fs.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, {recursive: true}).catch((err) => { 
-        if (err) return console.error(err);
+        if (err) this.emit("error", err);
       });
     }
     
@@ -94,11 +94,11 @@ export class Database extends BaseClient {
   }
 
   protected writeContainer(container: string, value: object) {
-    fs.writeFile(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`, BSON.serialize(value), (err)=>{ console.error(err); });
+    fs.writeFile(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`, BSON.serialize(value), (err)=>{ if (err) this.emit("error", err); });
   }
 
   protected writePointer(pointer: string, value: object) {
-    fs.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, BSON.serialize(value), (err)=>{ console.error(err); });
+    fs.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, BSON.serialize(value), (err)=>{ if (err) this.emit("error", err); });
   }
 
   public findPointer(key: string) {
