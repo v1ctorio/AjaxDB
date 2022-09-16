@@ -171,6 +171,15 @@ class Database extends BaseClient_1.BaseClient {
         });
         return size;
     }
+    async deleteSeveralByKey(pointers, keys) {
+        pointers.forEach((x) => {
+            if (!this.CheckPointer(x))
+                throw new Error("Pointer is not exists");
+            keys.forEach(async (y) => {
+                await this.deleteByKey(x, y).catch(err => console.error(err));
+            });
+        });
+    }
     async deleteByKey(pointer, key) {
         const puntero = await this.findPointer(pointer).catch(err => console.error("error", err));
         const container = await this.findContainer(pointer).catch(err => console.error("error", err));
@@ -217,14 +226,21 @@ class Database extends BaseClient_1.BaseClient {
             throw new Error("Container is not exists");
         if (!pointer)
             throw new Error("Pointer is not exist");
-        let dataKey = this.get(pointer, findKey);
-        container.containers.forEach((x, y) => {
-            if (x[y].content[editKey.key]) {
-                if (container != undefined)
-                    container.containers[y].content[editKey.key] = editKey.value;
-            }
-        });
-        this.writeContainer(pointerData.container, container);
+        let dataKey = await this.get(pointer, findKey).then((data) => {
+            if (!data)
+                throw new Error("Container is not exists");
+            if (!Object.keys(editKey).find(key => key === "key"))
+                throw new Error("key is not defined");
+            if (!Object.keys(editKey).find(key => key === "value"))
+                throw new Error("key is not defined");
+            container?.containers.forEach((x, y) => {
+                if (x[y].content[editKey.key]) {
+                    if (container != undefined)
+                        data.content[editKey.key] = editKey.value;
+                }
+            });
+            this.writeContainer(pointerData.container, container);
+        }).catch(err => console.error(err));
     }
     size() {
         let dirs = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
@@ -247,16 +263,6 @@ class Database extends BaseClient_1.BaseClient {
             }
         }
         return size;
-    }
-    deleteSeveralByKey(pointers, keys) {
-        pointers.forEach((x) => {
-            if (!this.CheckPointer(x))
-                throw new Error("Pointer is not exists");
-            keys.forEach((y) => {
-                return this.deleteByKey(x, y);
-            });
-        });
-        return true;
     }
 }
 exports.Database = Database;

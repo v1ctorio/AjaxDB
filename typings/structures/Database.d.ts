@@ -27,15 +27,15 @@ export declare class Database extends BaseClient {
     protected CreateContainers(): Promise<void>;
     protected writeContainer(container: string, value: object): void;
     protected writePointer(pointer: string, value: object): void;
-    findPointer(key: string): Promise<any>;
-    findContainer(keyOfPointer: string): Promise<import("bson").Document | undefined>;
+    protected findPointer(key: string): Promise<any>;
+    protected findContainer(keyOfPointer: string): Promise<import("bson").Document | undefined>;
     push(key: string, data: dataPush, AUTO_INCREMENT?: boolean): Promise<void>;
     protected sizeContainers(pointer: string): Promise<number>;
+    deleteSeveralByKey(pointers: string[], keys: string[]): Promise<void>;
     deleteByKey(pointer: string, key: string): Promise<void>;
     get(pointer: string, value: object | any): Promise<object>;
     edit(pointer: string, findKey: object, editKey: editKey): Promise<void>;
     size(): number;
     sizeContainer(pointer: string): number;
-    deleteSeveralByKey(pointers: string[], keys: string[]): boolean;
 }
 export {};
