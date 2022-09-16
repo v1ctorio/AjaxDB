@@ -18,6 +18,17 @@ import { Client } from 'ajax.db';
 const AjaxDB = new Client({ database: "DatabaseName", path: "path/to/databases" });
 
 // Instance new Client for create new database or use a database.
+
+// Data is optional
+
+AjaxDB.on('start', (data) => {
+  console.log("AjaxDB start!");
+});
+
+// error: ErrorClient = string | object | number | undefined
+AjaxDB.on('error', (error) => {
+  console.error(error);  
+});
 ```
 - `CreatePointer`
 ```ts

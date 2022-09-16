@@ -2,6 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../index");
 const AjaxDB = new index_1.Client({ database: "DatabaseName", path: __dirname + "/../.." }); // Important! do not put / at the end of the path
+AjaxDB.on('start', () => {
+    console.log("Database connected");
+});
+AjaxDB.on('error', (error) => {
+    console.error(error);
+});
 AjaxDB.CreatePointer('Pointer', 'Container');
 AjaxDB.push('Pointer', { "content": { "name": "Printf", "lastname": "Dead" } }, true); // Use to sotre new data without affecting the others - output: boolean
 AjaxDB.deleteByKey('Pointer', 'lastname'); // delete key - output: boolean
