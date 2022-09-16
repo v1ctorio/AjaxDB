@@ -101,7 +101,7 @@ export class Database extends BaseClient {
     fs.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, BSON.serialize(value), (err)=>{ if (err) this.emit("error", err); });
   }
 
-  public async findPointer(key: string) {
+  protected async findPointer(key: string) {
     if(!this.CheckDatabaseDir()) {console.error("Database is not exists, not find data"); return;}
     if(!this.CheckPointersDir()) {await this.CreatePointers(); return;}
     if(!this.CheckContainersDir()) {await this.CreateContainers(); console.error("Containers is not exists, not find data."); return;}
@@ -118,7 +118,7 @@ export class Database extends BaseClient {
     return data;
   }
 
-  public async findContainer(keyOfPointer: string) {
+  protected async findContainer(keyOfPointer: string) {
     if(!this.CheckDatabaseDir()) {console.error("Database is not exists, not find data"); return;}
     if(!this.CheckPointersDir()) {await this.CreatePointers(); console.error("Pointers is not exists, not find data."); return;}
     if(!this.CheckContainersDir()) {await this.CreateContainers(); console.error("Containers is not exists, not find data."); return;}
@@ -172,6 +172,15 @@ export class Database extends BaseClient {
 
     return size;
   }
+  
+  public async deleteSeveralByKey(pointers: string[], keys: string[]) {
+    pointers.forEach((x: string) => {
+      if(!this.CheckPointer(x)) throw new Error("Pointer is not exists");
+      keys.forEach(async (y: string) => {
+        await this.deleteByKey(x, y).catch(err => console.error(err));
+      });
+    });
+  }
 
   public async deleteByKey(pointer: string, key: string) {
     const puntero = await this.findPointer(pointer).catch(err => console.error("error", err));
@@ -216,18 +225,24 @@ export class Database extends BaseClient {
 
   public async edit(pointer: string, findKey: object, editKey: editKey) {
     let pointerData = await this.findPointer(pointer).catch(err => console.error(err));
-    let container = await this.findContainer(pointer).catch(err => console.error(err));
+    let container: any = await this.findContainer(pointer).catch(err => console.error(err));
     if(!container) throw new Error("Container is not exists");
     if(!pointer) throw new Error("Pointer is not exist");
-    let dataKey = this.get(pointer, findKey);
     
-    container.containers.forEach((x: any, y: number) => {
-      if(x[y].content[editKey.key]) {
-        if (container != undefined) container.containers[y].content[editKey.key] = editKey.value;
-      }
-    });
+    let dataKey = await this.get(pointer, findKey).then((data: any) => {
+      if (!data) throw new Error("Container is not exists");
+      if (!Object.keys(editKey).find(key => key === "key")) throw new Error("key is not defined");
+      if (!Object.keys(editKey).find(key => key === "value")) throw new Error("key is not defined");
 
-    this.writeContainer(pointerData.container, container);
+      container?.containers.forEach((x: any, y: number) => {
+        if(x[y].content[editKey.key]) {
+          if (container != undefined) data.content[editKey.key] = editKey.value;
+        }
+      });
+
+      this.writeContainer(pointerData.container, container);
+
+    }).catch(err => console.error(err));
   }
  
   public size() {
@@ -253,15 +268,5 @@ export class Database extends BaseClient {
       }
     }
     return size;
-  }
-
-  public deleteSeveralByKey(pointers: string[], keys: string[]) {
-    pointers.forEach((x: string) => {
-      if(!this.CheckPointer(x)) throw new Error("Pointer is not exists");
-      keys.forEach((y: string) => {
-        return this.deleteByKey(x, y);
-      });
-    });
-    return true;
-  }
+  } 
 }
