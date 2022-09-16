@@ -6,10 +6,7 @@ const node_events_1 = require("node:events");
 class BaseClient extends node_events_1.EventEmitter {
     constructor() {
         super();
-        this.data = new Map();
         this.ejson = bson_1.EJSON;
-    }
-    find(key) {
     }
 }
 exports.BaseClient = BaseClient;

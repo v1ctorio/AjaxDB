@@ -68,7 +68,7 @@ export class Client extends Database {
     fs.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true })
       .then((x) => {
         fs.promises.writeFile(`${this.shortPath}/containers/${containerName}.bson`, BSON.serialize(containerData));
-      }).catch((err) => this.emit("error", err);
+      }).catch((err) => this.emit("error", err));
     return;
   }
 }
