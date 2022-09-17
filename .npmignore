@@ -1,1 +1,7 @@
 src
+.eslintrc
+.eslintignore
+.gitignore
+tsconfig.json
+src/tests
+doc

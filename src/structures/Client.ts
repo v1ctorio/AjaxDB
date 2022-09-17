@@ -16,6 +16,10 @@ export interface Client {
 }
 
 export class Client extends Database {
+  /**
+   * 
+   * @param {object} options - Put database name and path 
+   */
   constructor(options: options) {
     super({ database: options.database, path: options.path });
     if(this.path.endsWith("/")) this.path = this.path.slice(0, -1);
@@ -53,6 +57,12 @@ export class Client extends Database {
 
   }
 
+  /**
+   * 
+   * @param {string} key - Pointer name
+   * @param {string} containerName - Container name
+   * @returns void
+   */
   public async CreatePointer(key: string, containerName: string) {
     if (fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${key}.bson`)) return;
     if (fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${containerName}.bson`)) return;
