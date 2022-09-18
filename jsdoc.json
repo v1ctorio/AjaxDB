@@ -1,5 +1,5 @@
 {
-    "plugins": [],
+    "plugins": ["plugins/markdown"],
 
     "recurseDepth": 10,
 
@@ -14,12 +14,25 @@
 
         "destination": "./docs",
 
-        "recurse": true
+        "recurse": true,
+
+        "template": "node_modules/clean-jsdoc-theme",
+
+        "theme_opts": {
+            "default_theme": "dark",
+            "base_url": "https://printfdead.github.io/ajaxdb",
+            "homepageTitle": "AjaxDB"
+        }
     },
 
     "templates": {
 
         "cleverLinks":    false,
         "monospaceLinks": false
+    },
+
+    "markdown": {
+        "hardwrap": false,
+        "idInHeadings": true
     }
 }
