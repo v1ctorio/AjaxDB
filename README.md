@@ -1,5 +1,7 @@
 # @AjaxDB
 ### [BeeDB](https://github.com/theMarzon/BeeDB) inspired package
+
+> Documentation: [AjaxDB Docs](https://printfdead.github.io/ajaxdb/index.html)
 # Information:
 - :wrench: Efficient and fast database using BSON.
 - :butterfly: Simple and easy to use
@@ -77,15 +79,7 @@ await AjaxDB.push("PointerName", { "id": number | string, "content": object }, A
 await AjaxDB.deleteByKey("PointerName", "KeyName"); // void
 ```
 - `deleteSeveralByKey`
-```ts
-/** 
- * @param {array} pointers - pointers name
- * @param {array} keys - keys name
- * @async
- * @description Delete all keys specified in the array
-*/
-await AjaxDB.deleteSeveralByKey(["Pointers"...], ["Keys"...]); // void
-```
+<span style="color:red">**Deprecated & Deleted method.**</span>
 - `get`
 ```ts
 /**
