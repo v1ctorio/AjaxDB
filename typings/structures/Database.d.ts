@@ -2,8 +2,7 @@ import { Document } from 'bson';
 import { BaseClient } from './BaseClient';
 import crypto from 'crypto-js';
 /**
- * @typedef DatabaseOptions
- * @type {object}
+ * @typedef {object} DatabaseOptions
  * @property {string} database - Database name
  * @property {string} path - Path to create ajax_databases folder
  */
@@ -17,8 +16,7 @@ export interface Database {
     options: options;
 }
 /**
- * @typedef PushOptions
- * @type {object}
+ * @typedef {object} PushOptions
  * @property {object} content - Content data to push
  * @property {string, number}  id? - ID container (Optional)
  */
@@ -27,8 +25,7 @@ declare type dataPush = {
     id?: string | number;
 };
 /**
- * @typedef FindOptions
- * @type {object}
+ * @typedef {object} FindOptions
  * @property {string} keyName - Key to find
  * @property {string} keyValue - Value to find
  */
@@ -38,8 +35,7 @@ declare type findOptions = {
     keyValue: string;
 };
 /**
- * @typedef EditKeyOptions
- * @type {object}
+ * @typedef {object} EditKeyOptions
  * @property {string} key - Key to edit
  * @property {string} value - Value to edit
  */
@@ -48,8 +44,16 @@ declare type editKey = {
     value: string;
 };
 /**
- * @typedef EncryptedOptions
- * @type {object}
+ * @typedef {object} editOptions
+ * @property {FindOptions}  find - Find options
+ * @property {EditKeyOptions} edit - Edit key options
+ */
+declare type editOptions = {
+    find: findOptions;
+    edit: editKey;
+};
+/**
+ * @typedef {object} EncryptedOptions
  * @property {string} content - Content to be encrypted
  * @property {number} salt - Length salt
  */
@@ -58,8 +62,7 @@ declare type encriptOptions = {
     salt?: number | 10;
 };
 /**
- * @typedef DecryptedOptions
- * @type {object}
+ * @typedef {object} DecryptedOptions
  * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
  * @property {string} secretKey - Secret key generate by encrypt method
  */
@@ -195,10 +198,9 @@ export declare class Database extends BaseClient {
      * @async
      * @description Edit data container
      * @param {string} pointer - Pointer name
-     * @param {FindOptions} findKey - Find key data
-     * @param {EditKeyOptions} editKey - Edit key data
+     * @param {EditOptions} editOptions - Edit options
      */
-    edit(pointer: string, findKey: findOptions, editKey: editKey): Promise<void>;
+    edit(pointer: string, editOptions: editOptions): Promise<void>;
     /**
      * @public
      * @description Count the pointers

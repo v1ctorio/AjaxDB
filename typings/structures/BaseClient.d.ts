@@ -6,8 +6,7 @@ import { EventEmitter } from 'node:events';
  */
 declare type ejson = typeof EJSON;
 /**
- * @typedef ErrorClient
- * @type {string, number, object, undefined}
+ * @typedef {(string|number|object|undefined)} ErrorClient
  */
 declare type ErrorClient = string | number | object | undefined;
 export interface BaseClient {

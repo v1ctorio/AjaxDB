@@ -2,12 +2,10 @@ import fs from 'node:fs';
 
 import BSON from 'bson';
 
-import { BaseClient } from './BaseClient';
 import { Database   } from './Database';
 
 /**
- * @typedef ClientOptions
- * @type {object}
+ * @typedef  {object}ClientOptions
  * @property {string} path - Path to create ajax_database folder
  * @property {string} database - Database name
  * @property {boolean} useEventErr - (Optional) Use event error or not

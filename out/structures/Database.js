@@ -9,7 +9,6 @@ const bson_1 = __importDefault(require("bson"));
 const BaseClient_1 = require("./BaseClient");
 const crypto_js_1 = __importDefault(require("crypto-js"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-;
 class Database extends BaseClient_1.BaseClient {
     /**
      * @constructor
@@ -23,7 +22,6 @@ class Database extends BaseClient_1.BaseClient {
         if (this.path.endsWith("/"))
             this.path = this.path.slice(0, -1);
     }
-    ;
     /**
      * @protected
      * @description Check if the "ajax_databases" directory exists
@@ -32,7 +30,6 @@ class Database extends BaseClient_1.BaseClient {
     CheckDatabaseDir() {
         return node_fs_1.default.existsSync(this.path);
     }
-    ;
     /**
      * @protected
      * @description Check if the "pointers" directory exists
@@ -41,7 +38,6 @@ class Database extends BaseClient_1.BaseClient {
     CheckPointersDir() {
         return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`);
     }
-    ;
     /**
      * @protected
      * @description Check if the "containers" directory exists
@@ -50,7 +46,6 @@ class Database extends BaseClient_1.BaseClient {
     CheckContainersDir() {
         return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers`);
     }
-    ;
     /**
      * @protected
      * @description Check if the pointer file exists
@@ -60,7 +55,6 @@ class Database extends BaseClient_1.BaseClient {
     CheckPointer(pointer) {
         return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
     }
-    ;
     /**
      * @protected
      * @description Check if the container file exists
@@ -74,7 +68,6 @@ class Database extends BaseClient_1.BaseClient {
         const container = bson_1.default.deserialize(puntero).container;
         return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`);
     }
-    ;
     /**
      * @protected
      * @async
@@ -91,7 +84,6 @@ class Database extends BaseClient_1.BaseClient {
                 this.emit("error", err);
         });
     }
-    ;
     /**
      * @protected
      * @async
@@ -198,7 +190,7 @@ class Database extends BaseClient_1.BaseClient {
      */
     async push(key, data, AUTO_INCREMENT) {
         const pointer = await this.findPointer(key).catch(err => console.error(err));
-        let container = await this.findContainer(key).catch(err => console.error(err));
+        const container = await this.findContainer(key).catch(err => console.error(err));
         if (!pointer)
             throw new Error("pointer is not exists");
         if (!container)
@@ -282,9 +274,9 @@ class Database extends BaseClient_1.BaseClient {
      * @returns object
      */
     async get(pointer, find) {
-        let c = await this.findContainer(pointer).catch(err => console.error(err));
-        let data = Object.keys(find);
-        let entries = Object.entries(find);
+        const c = await this.findContainer(pointer).catch(err => console.error(err));
+        const data = Object.keys(find);
+        const entries = Object.entries(find);
         let result = {};
         if (!c)
             throw new Error("Container is not exist");
@@ -294,7 +286,7 @@ class Database extends BaseClient_1.BaseClient {
                     if (container.id === find.id)
                         result = container;
                 }
-                let keys = Object.keys(container.content);
+                const keys = Object.keys(container.content);
                 keys.forEach(x => {
                     if (x === key) {
                         if (entries[index][1] === container.content[x])
@@ -312,16 +304,17 @@ class Database extends BaseClient_1.BaseClient {
      * @async
      * @description Edit data container
      * @param {string} pointer - Pointer name
-     * @param {FindOptions} findKey - Find key data
-     * @param {EditKeyOptions} editKey - Edit key data
+     * @param {EditOptions} editOptions - Edit options
      */
-    async edit(pointer, findKey, editKey) {
-        let pointerData = await this.findPointer(pointer).catch(err => console.error(err));
-        let container = await this.findContainer(pointer).catch(err => console.error(err));
+    async edit(pointer, editOptions) {
+        const pointerData = await this.findPointer(pointer).catch(err => console.error(err));
+        const container = await this.findContainer(pointer).catch(err => console.error(err));
         if (!container)
             throw new Error("Container is not exists");
         if (!pointerData)
             throw new Error("Pointer is not exist");
+        const findKey = editOptions.find;
+        const editKey = editOptions.edit;
         await this.get(pointer, findKey).then((data) => {
             if (!data)
                 throw new Error("Container is not exists");
@@ -346,7 +339,7 @@ class Database extends BaseClient_1.BaseClient {
      * @returns number
      */
     size() {
-        let dirs = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
+        const dirs = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
         let count = 0;
         for (const file of dirs) {
             count += 1;
@@ -362,11 +355,11 @@ class Database extends BaseClient_1.BaseClient {
     sizeContainer(pointer) {
         if (!this.CheckPointer(pointer))
             return;
-        let containers = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
+        const containers = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
         let size = 0;
         for (const container of containers) {
-            let containerFile = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
-            let data = bson_1.default.deserialize(containerFile);
+            const containerFile = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
+            const data = bson_1.default.deserialize(containerFile);
             if (data.pointer === pointer)
                 size += 1;
         }

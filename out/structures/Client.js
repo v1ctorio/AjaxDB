@@ -7,7 +7,6 @@ exports.Client = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const bson_1 = __importDefault(require("bson"));
 const Database_1 = require("./Database");
-;
 class Client extends Database_1.Database {
     /**
      *
@@ -74,8 +73,6 @@ class Client extends Database_1.Database {
         })
             .catch((err) => console.error(err));
     }
-    ;
 }
 exports.Client = Client;
-;
 //# sourceMappingURL=Client.js.map

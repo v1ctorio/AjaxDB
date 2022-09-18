@@ -8,8 +8,7 @@ import crypto from 'crypto-js';
 import bcrypt from 'bcryptjs';
 
 /**
- * @typedef DatabaseOptions
- * @type {object}
+ * @typedef {object} DatabaseOptions
  * @property {string} database - Database name
  * @property {string} path - Path to create ajax_databases folder
  */
@@ -28,8 +27,7 @@ export interface Database {
 }
 
 /**
- * @typedef PushOptions
- * @type {object}
+ * @typedef {object} PushOptions
  * @property {object} content - Content data to push
  * @property {string, number}  id? - ID container (Optional)
  */
@@ -41,8 +39,7 @@ type dataPush = {
 };
 
 /**
- * @typedef FindOptions
- * @type {object}
+ * @typedef {object} FindOptions
  * @property {string} keyName - Key to find
  * @property {string} keyValue - Value to find
  */
@@ -53,8 +50,7 @@ type findOptions = {
 }
 
 /**
- * @typedef EditKeyOptions
- * @type {object}
+ * @typedef {object} EditKeyOptions
  * @property {string} key - Key to edit
  * @property {string} value - Value to edit
  */
@@ -65,8 +61,7 @@ type editKey = {
 };
 
 /**
- * @typedef editOptions
- * @type {object}
+ * @typedef {object} editOptions
  * @property {FindOptions}  find - Find options
  * @property {EditKeyOptions} edit - Edit key options
  */
@@ -76,8 +71,7 @@ type editOptions = {
 }
 
 /**
- * @typedef EncryptedOptions
- * @type {object}
+ * @typedef {object} EncryptedOptions
  * @property {string} content - Content to be encrypted
  * @property {number} salt - Length salt
  */
@@ -91,8 +85,7 @@ type encriptOptions = {
 type CipherParams = typeof crypto.lib.CipherParams;
 
 /**
- * @typedef DecryptedOptions
- * @type {object}
+ * @typedef {object} DecryptedOptions
  * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
  * @property {string} secretKey - Secret key generate by encrypt method
  */
