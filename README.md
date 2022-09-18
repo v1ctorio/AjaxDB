@@ -3,7 +3,7 @@
 # Information:
 - :wrench: Efficient and fast database using BSON.
 - :butterfly: Simple and easy to use
-- :smile: Version 2.0
+- :smile: Version 2.1
 
 # Installation
 ```sh
@@ -123,4 +123,7 @@ await AjaxDB.edit("PointerName", { "FindKey": "ValueKey" }, { "key": "KeyName", 
 
 ## Development notes
 - The database is in the testing phase, report any errors.
-- Thank you for reading!
+- Thanks you for reading!
+- :star: Thanks theMarzon for the inspiration!
+
+**[Support Discord](https://discord.gg/ZdMqhEWhUN)** | **[My Discord Profile](https://dsc.bio/printf)**
