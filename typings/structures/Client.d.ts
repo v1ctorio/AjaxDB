@@ -1,12 +1,12 @@
 import { Database } from './Database';
-declare type options = {
-    database: string;
+interface options {
     path: string;
-    useEventErr?: boolean;
-};
-export interface Client {
-    shortPath: string;
     database: string;
+    useEventErr?: boolean;
+}
+export interface Client {
+    database: string;
+    shortPath: string;
     options: options;
 }
 export declare class Client extends Database {

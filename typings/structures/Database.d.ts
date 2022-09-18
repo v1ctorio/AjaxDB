@@ -1,17 +1,17 @@
-import { BaseClient } from './BaseClient';
 import { Document } from 'bson';
+import { BaseClient } from './BaseClient';
 declare type options = {
     database: string;
     path: string;
 };
 export interface Database {
     database: string;
-    options: options;
     path: string;
+    options: options;
 }
 declare type dataPush = {
-    id?: string | number;
     content: object;
+    id?: string | number;
 };
 declare type editKey = {
     key: string;

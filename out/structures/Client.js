@@ -4,9 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Client = void 0;
-const fs_1 = __importDefault(require("fs"));
-const Database_1 = require("./Database");
+const node_fs_1 = __importDefault(require("node:fs"));
 const bson_1 = __importDefault(require("bson"));
+const Database_1 = require("./Database");
+;
+;
 class Client extends Database_1.Database {
     /**
      *
@@ -19,26 +21,26 @@ class Client extends Database_1.Database {
         this.options = options;
         this.shortPath = this.path + "/ajax_databases/" + options.database;
         this.database = options.database;
-        if (!fs_1.default.existsSync(this.path)) {
+        if (!node_fs_1.default.existsSync(this.path)) {
             throw new Error("Path is not exists");
         }
         this.CheckAndCreateFolders();
         this.emit('start');
     }
     async CheckAndCreateFolders() {
-        if (!fs_1.default.existsSync(this.path + "/ajax_databases/")) {
-            await fs_1.default.promises.mkdir(this.path + "/ajax_databases/", { recursive: true }).catch((err) => {
+        if (!node_fs_1.default.existsSync(this.path + "/ajax_databases/")) {
+            await node_fs_1.default.promises.mkdir(this.path + "/ajax_databases/", { recursive: true }).catch((err) => {
                 if (err)
                     this.emit("error", err);
             });
         }
-        if (!fs_1.default.existsSync(this.shortPath)) {
-            await fs_1.default.promises.mkdir(this.shortPath, { recursive: true }).catch((e) => this.emit("error", e));
+        if (!node_fs_1.default.existsSync(this.shortPath)) {
+            await node_fs_1.default.promises.mkdir(this.shortPath, { recursive: true }).catch((e) => this.emit("error", e));
         }
-        if (!fs_1.default.existsSync(this.path + "/ajax_databases/" + this.database + "/pointers")) {
+        if (!node_fs_1.default.existsSync(this.path + "/ajax_databases/" + this.database + "/pointers")) {
             await this.CreatePointers();
         }
-        if (!fs_1.default.existsSync(this.shortPath + "/containers")) {
+        if (!node_fs_1.default.existsSync(this.shortPath + "/containers")) {
             await this.CreateContainers();
         }
     }
@@ -49,9 +51,9 @@ class Client extends Database_1.Database {
      * @returns void
      */
     async CreatePointer(key, containerName) {
-        if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${key}.bson`))
+        if (node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${key}.bson`))
             return;
-        if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${containerName}.bson`))
+        if (node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${containerName}.bson`))
             return;
         const pointerData = bson_1.default.serialize({
             "key": key,
@@ -61,16 +63,20 @@ class Client extends Database_1.Database {
             "pointer": key,
             "containers": []
         });
-        await fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/pointers`, { recursive: true })
+        await node_fs_1.default.promises
+            .mkdir(`${this.path}/ajax_databases/${this.database}/pointers`, { recursive: true })
             .then(async (x) => {
-            await fs_1.default.promises.writeFile(`${this.shortPath}/pointers/${key}.bson`, pointerData);
-        }).catch((err) => console.error(err));
-        await fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true })
+            await node_fs_1.default.promises.writeFile(`${this.shortPath}/pointers/${key}.bson`, pointerData);
+        })
+            .catch((err) => console.error(err));
+        await node_fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true })
             .then(async (x) => {
-            await fs_1.default.promises.writeFile(`${this.shortPath}/containers/${containerName}.bson`, containerData);
-        }).catch((err) => console.error(err));
-        return;
+            await node_fs_1.default.promises.writeFile(`${this.shortPath}/containers/${containerName}.bson`, containerData);
+        })
+            .catch((err) => console.error(err));
     }
+    ;
 }
 exports.Client = Client;
+;
 //# sourceMappingURL=Client.js.map
