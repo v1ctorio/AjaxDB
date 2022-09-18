@@ -25,7 +25,7 @@ export class Client extends Database {
     * @typedef  {Object}ClientOptions
     * @property {string} path - Path to create ajax_database folder
     * @property {string} database - Database name
-    * @property {boolean} useEventErr - (Optional) Use event error or not
+    * @property ?{boolean} useEventErr? - (Optional) Use event error or not
   */
 
   /**

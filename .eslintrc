@@ -87,8 +87,7 @@
 
         "indent": [
 
-            "error", 4,
-
+            "error", 2,
             {
                 "ImportDeclaration":  "first",
                 "VariableDeclarator": "first",
