@@ -1,8 +1,11 @@
-src
+# Directories
+src/
+doc/
+src/tests/
+ajax_databases/
+
+# Files
 .eslintrc
 .eslintignore
 .gitignore
 tsconfig.json
-src/tests
-doc
-ajax_databases
