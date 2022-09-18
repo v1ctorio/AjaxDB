@@ -5,14 +5,14 @@
 
     "source": {
 
-        "include": [ "out" ],
+        "include": [ "dist" ],
 
         "includePattern": ".+\\.js(doc|x)?$"
     },
 
     "opts": {
 
-        "destination": "./doc",
+        "destination": "./docs",
 
         "recurse": true
     },

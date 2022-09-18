@@ -1,6 +1,11 @@
 # Directories
 node_modules/
 ajax_databases/
+dist/
+typings/
 
 # Files
 git.sh
+
+# Extensions
+*.log

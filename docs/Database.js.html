@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: structures/Database.js</title>
+    <title>JSDoc: Source: Database.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: structures/Database.js</h1>
+    <h1 class="page-title">Source: Database.js</h1>
 
     
 
@@ -32,13 +32,20 @@ var __importDefault = (this &amp;&amp; this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Database = void 0;
-const BaseClient_1 = require("./BaseClient");
-const fs_1 = __importDefault(require("fs"));
+const node_fs_1 = __importDefault(require("node:fs"));
 const bson_1 = __importDefault(require("bson"));
+const BaseClient_1 = require("./BaseClient");
+const crypto_js_1 = __importDefault(require("crypto-js"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 class Database extends BaseClient_1.BaseClient {
     /**
+   * @typedef {Object} DatabaseOptions
+   * @property {string} database - Database name
+   * @property {string} path - Path to create ajax_databases folder
+   */
+    /**
      * @constructor
-     * @param {object} options - Put database name and path
+     * @param {DatabaseOptions} options - Put database name and path
      */
     constructor(options) {
         super();
@@ -54,10 +61,7 @@ class Database extends BaseClient_1.BaseClient {
      * @returns boolean
      */
     CheckDatabaseDir() {
-        if (fs_1.default.existsSync(this.path))
-            return true;
-        else
-            return false;
+        return node_fs_1.default.existsSync(this.path);
     }
     /**
      * @protected
@@ -65,10 +69,7 @@ class Database extends BaseClient_1.BaseClient {
      * @returns boolean
      */
     CheckPointersDir() {
-        if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`))
-            return true;
-        else
-            return false;
+        return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`);
     }
     /**
      * @protected
@@ -76,10 +77,7 @@ class Database extends BaseClient_1.BaseClient {
      * @returns boolean
      */
     CheckContainersDir() {
-        if (!fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers`))
-            return false;
-        else
-            return true;
+        return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers`);
     }
     /**
      * @protected
@@ -88,10 +86,7 @@ class Database extends BaseClient_1.BaseClient {
      * @returns boolean
      */
     CheckPointer(pointer) {
-        if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`))
-            return true;
-        else
-            return false;
+        return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
     }
     /**
      * @protected
@@ -100,17 +95,11 @@ class Database extends BaseClient_1.BaseClient {
      * @returns boolean
      */
     CheckContainer(pointer) {
-        if (this.CheckPointer(pointer)) {
-            const puntero = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
-            const container = bson_1.default.deserialize(puntero).container;
-            if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`))
-                return true;
-            else
-                return false;
-        }
-        else {
+        if (!this.CheckPointer(pointer))
             return false;
-        }
+        const puntero = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
+        const container = bson_1.default.deserialize(puntero).container;
+        return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`);
     }
     /**
      * @protected
@@ -119,12 +108,14 @@ class Database extends BaseClient_1.BaseClient {
      * @returns void
      */
     async CreatePointers() {
-        if (!this.CheckPointersDir())
-            await fs_1.default.promises.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", { recursive: true }).catch((err) => {
-                if (err)
-                    this.emit("error", err);
-            });
-        return;
+        if (this.CheckPointersDir())
+            return;
+        await node_fs_1.default.promises
+            .mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", { recursive: true })
+            .catch((err) => {
+            if (err)
+                this.emit("error", err);
+        });
     }
     /**
      * @protected
@@ -133,8 +124,8 @@ class Database extends BaseClient_1.BaseClient {
      * @returns void
      */
     async CreateContainers() {
-        if (!fs_1.default.existsSync(this.path + "/ajax_databases/" + this.database + "/containers")) {
-            await fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true }).catch((err) => {
+        if (!node_fs_1.default.existsSync(this.path + "/ajax_databases/" + this.database + "/containers")) {
+            await node_fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true }).catch((err) => {
                 if (err)
                     this.emit("error", err);
             });
@@ -145,10 +136,10 @@ class Database extends BaseClient_1.BaseClient {
      * @protected
      * @description Write container file
      * @param {string} container - container name
-     * @param {object} value - Container new data
+     * @param {Object} value - Container new data
      */
     writeContainer(container, value) {
-        fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`, bson_1.default.serialize(value), (err) => {
+        node_fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`, bson_1.default.serialize(value), (err) => {
             if (err)
                 this.emit("error", err);
         });
@@ -157,10 +148,10 @@ class Database extends BaseClient_1.BaseClient {
      * @protected
      * @description write container pointer
      * @param {string} pointer - Pointer name
-     * @param {object} value  - Pointer new data
+     * @param {Object} value  - Pointer new data
      */
     writePointer(pointer, value) {
-        fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, bson_1.default.serialize(value), (err) => {
+        node_fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, bson_1.default.serialize(value), (err) => {
             if (err)
                 this.emit("error", err);
         });
@@ -182,11 +173,11 @@ class Database extends BaseClient_1.BaseClient {
         let data = {};
         if (!this.CheckPointer(key))
             throw new Error("Pointer is not exists");
-        const pointersDir = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
+        const pointersDir = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
         for (const pointerFile of pointersDir) {
-            if (pointerFile.slice(-5) !== key)
+            if (pointerFile !== key + ".bson")
                 continue;
-            const pointer = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointerFile}`);
+            const pointer = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointerFile}`);
             data = bson_1.default.deserialize(pointer);
         }
         return data;
@@ -219,46 +210,51 @@ class Database extends BaseClient_1.BaseClient {
             throw new Error("pointer is not exists");
         if (!this.CheckContainer(key))
             throw new Error("Container is not exists");
-        const container = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${pointer.container}.bson`);
+        const container = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${pointer.container}.bson`);
         return bson_1.default.deserialize(container);
     }
+    /**
+   * @typedef {Object} PushOptions
+   * @property {Object} content - Content data to push
+   * @property {?(string|number)}  id? - ID container (Optional)
+   */
     /**
      * @public
      * @async
      * @description Push the data to the container
      * @param {string} key - Pointer name
-     * @param {object} data - Data to be pushed
+     * @param {PushOptions} data - Data to be pushed
      * @param AUTO_INCREMENT
      */
     async push(key, data, AUTO_INCREMENT) {
         const pointer = await this.findPointer(key).catch(err => console.error(err));
-        let container = await this.findContainer(key).catch(err => console.error(err));
+        const container = await this.findContainer(key).catch(err => console.error(err));
         if (!pointer)
             throw new Error("pointer is not exists");
         if (!container)
             throw new Error("container is not exists");
         let size = 0;
+        let newContainer = {};
         await this.sizeContainers(key)
             .then(x => {
             size = x;
         })
             .catch(err => console.error(err));
         if (AUTO_INCREMENT) {
-            let newContainer = {
+            newContainer = {
                 "id": size + 1,
                 "content": data.content
             };
-            container.containers.push(newContainer);
         }
         else {
             if (!Object.keys(data).find((Key) => Key === "id"))
                 throw new Error("Not defined \"id\" property");
-            let newContainer = {
+            newContainer = {
                 "id": data.id,
                 "content": data.content
             };
-            container.containers.push(newContainer);
         }
+        container.containers.push(newContainer);
         this.writeContainer(pointer.container, container);
     }
     /**
@@ -281,18 +277,11 @@ class Database extends BaseClient_1.BaseClient {
     /**
      * @public
      * @async
+     * @deprecated
      * @description Delete multiple keys together
-     * @param {array} pointers - Pointers name
-     * @param {array} keys  - Keys name
      */
     async deleteSeveralByKey(pointers, keys) {
-        pointers.forEach((x) => {
-            if (!this.CheckPointer(x))
-                throw new Error("Pointer is not exists");
-            keys.forEach(async (y) => {
-                await this.deleteByKey(x, y).catch(err => console.error(err));
-            });
-        });
+        console.log("[!] Method id deprecated.");
     }
     /**
      * @public
@@ -315,27 +304,32 @@ class Database extends BaseClient_1.BaseClient {
         this.writeContainer(puntero.container, container);
     }
     /**
+   * @typedef {Object} FindOptions
+   * @property {string} keyName - Key to find
+   * @property {string} keyValue - Value to find
+   */
+    /**
      * @public
      * @async
      * @description Get container data
      * @param {string} pointer - Pointer name
-     * @param {object} value - Data to be find for in the container
+     * @param {FindOptions} find - Data to be find for in the container
      * @returns object
      */
-    async get(pointer, value) {
-        let c = await this.findContainer(pointer).catch(err => console.error(err));
-        let data = Object.keys(value);
-        let entries = Object.entries(value);
+    async get(pointer, find) {
+        const c = await this.findContainer(pointer).catch(err => console.error(err));
+        const data = Object.keys(find);
+        const entries = Object.entries(find);
         let result = {};
         if (!c)
             throw new Error("Container is not exist");
         c.containers.forEach((container) => {
             data.forEach((key, index) => {
                 if (data.find(key => key === "id")) {
-                    if (container.id === value.id)
+                    if (container.id === find.id)
                         result = container;
                 }
-                let keys = Object.keys(container.content);
+                const keys = Object.keys(container.content);
                 keys.forEach(x => {
                     if (x === key) {
                         if (entries[index][1] === container.content[x])
@@ -344,23 +338,36 @@ class Database extends BaseClient_1.BaseClient {
                 });
             });
         });
+        if (Object.entries(result).length === 0)
+            return null;
         return result;
     }
+    /**
+   * @typedef {Object} EditKeyOptions
+   * @property {string} key - Key to edit
+   * @property {string} value - Value to edit
+   */
+    /**
+   * @typedef {Object} EditOptions
+   * @property {FindOptions}  find - Find options
+   * @property {EditKeyOptions} edit - Edit key options
+   */
     /**
      * @public
      * @async
      * @description Edit data container
      * @param {string} pointer - Pointer name
-     * @param {object} findKey - Find key data
-     * @param {object} editKey - Edit key data
+     * @param {EditOptions} editOptions - Edit options
      */
-    async edit(pointer, findKey, editKey) {
-        let pointerData = await this.findPointer(pointer).catch(err => console.error(err));
-        let container = await this.findContainer(pointer).catch(err => console.error(err));
+    async edit(pointer, editOptions) {
+        const pointerData = await this.findPointer(pointer).catch(err => console.error(err));
+        const container = await this.findContainer(pointer).catch(err => console.error(err));
         if (!container)
             throw new Error("Container is not exists");
         if (!pointerData)
             throw new Error("Pointer is not exist");
+        const findKey = editOptions.find;
+        const editKey = editOptions.edit;
         await this.get(pointer, findKey).then((data) => {
             if (!data)
                 throw new Error("Container is not exists");
@@ -369,9 +376,12 @@ class Database extends BaseClient_1.BaseClient {
             if (!Object.keys(editKey).find(key => key === "value"))
                 throw new Error("key is not defined");
             container?.containers.forEach((x, y) => {
-                if (x[y].content[editKey.key])
-                    if (container != undefined)
+                if (x.id === data.id) {
+                    if (x.content[editKey.key]) {
                         data.content[editKey.key] = editKey.value;
+                        container.containers[y] = data;
+                    }
+                }
             });
             this.writeContainer(pointerData.container, container);
         }).catch(err => console.error(err));
@@ -382,7 +392,7 @@ class Database extends BaseClient_1.BaseClient {
      * @returns number
      */
     size() {
-        let dirs = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
+        const dirs = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
         let count = 0;
         for (const file of dirs) {
             count += 1;
@@ -390,7 +400,7 @@ class Database extends BaseClient_1.BaseClient {
         return count;
     }
     /**
-     * @public
+     * @protected
      * @description Count the containers in containers folder
      * @param {string} pointer - Pointer name
      * @returns number
@@ -398,15 +408,48 @@ class Database extends BaseClient_1.BaseClient {
     sizeContainer(pointer) {
         if (!this.CheckPointer(pointer))
             return;
-        let containers = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
+        const containers = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
         let size = 0;
         for (const container of containers) {
-            let containerFile = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
-            let data = bson_1.default.deserialize(containerFile);
+            const containerFile = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
+            const data = bson_1.default.deserialize(containerFile);
             if (data.pointer === pointer)
                 size += 1;
         }
         return size;
+    }
+    /**
+   * @typedef {Object} EncryptedOptions
+   * @property {string} content - Content to be encrypted
+   * @property {?number} [salt=10] - Length salt
+   */
+    /**
+     * @public
+     * @description Encrypted string
+     * @param {EncryptedOptions} options - Encrypted Options
+     * @returns object
+     */
+    encrypt(options) {
+        const salt = bcryptjs_1.default.genSaltSync(options.salt);
+        const hash = bcryptjs_1.default.hashSync(options.content, salt);
+        const encryptKey = crypto_js_1.default.AES.encrypt(options.content, hash);
+        return { key_encrypt: encryptKey, secret_key: hash };
+    }
+    /**
+   * @typedef {Object} DecryptedOptions
+   * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
+   * @property {string} secretKey - Secret key generate by encrypt method
+   */
+    /**
+     * @public
+     * @description Decrypted string
+     * @param {DecryptedOptions} options - Descrypted options
+     * @returns string
+     */
+    decrypt(options) {
+        const bytes = crypto_js_1.default.AES.decrypt(options.encryptKey, options.secretKey);
+        const decryptedData = bytes.toString(crypto_js_1.default.enc.Utf8);
+        return decryptedData;
     }
 }
 exports.Database = Database;
@@ -420,13 +463,13 @@ exports.Database = Database;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BaseClient.html">BaseClient</a></li><li><a href="Client.html">Client</a></li><li><a href="Database.html">Database</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BaseClient.html">BaseClient</a></li><li><a href="Client.html">Client</a></li><li><a href="Database.html">Database</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Sep 16 2022 21:45:27 GMT-0300 (Argentina Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Sep 18 2022 09:39:17 GMT-0300 (Argentina Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

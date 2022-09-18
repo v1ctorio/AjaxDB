@@ -4,7 +4,7 @@
     "esModuleInterop": true,
     "target": "ES2022",
     "moduleResolution": "node",
-    "outDir": "out",
+    "outDir": "dist",
     "strict": true,
     "allowJs": true,
     "baseUrl": "./src",
