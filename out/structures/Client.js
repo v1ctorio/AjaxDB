@@ -53,22 +53,22 @@ class Client extends Database_1.Database {
             return;
         if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${containerName}.bson`))
             return;
-        const pointerData = {
+        const pointerData = bson_1.default.serialize({
             "key": key,
             "container": `${containerName}`
-        };
-        const containerData = {
+        });
+        const containerData = bson_1.default.serialize({
             "pointer": key,
             "containers": []
-        };
+        });
         await fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/pointers`, { recursive: true })
             .then(async (x) => {
-            await fs_1.default.promises.writeFile(`${this.shortPath}/pointers/${key}.bson`, bson_1.default.serialize(pointerData));
-        }).catch((err) => this.emit("error", err));
+            await fs_1.default.promises.writeFile(`${this.shortPath}/pointers/${key}.bson`, pointerData);
+        }).catch((err) => console.error(err));
         await fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true })
             .then(async (x) => {
-            await fs_1.default.promises.writeFile(`${this.shortPath}/containers/${containerName}.bson`, bson_1.default.serialize(containerData)).catch(err => console.error(err));
-        }).catch((err) => this.emit("error", err));
+            await fs_1.default.promises.writeFile(`${this.shortPath}/containers/${containerName}.bson`, containerData);
+        }).catch((err) => console.error(err));
         return;
     }
 }

@@ -21,5 +21,7 @@
     ],
     "types": ["node"]
   },
+  "exclude": ["doc", "node_modules", "out"],
+  "include": ["src/**/*"],
   "lib": ["es2022"]
 }

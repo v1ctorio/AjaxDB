@@ -156,7 +156,7 @@ class Database extends BaseClient_1.BaseClient {
             throw new Error("Pointer is not exists");
         const pointersDir = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
         for (const pointerFile of pointersDir) {
-            if (pointerFile.slice(-5) !== key)
+            if (pointerFile !== key + ".bson")
                 continue;
             const pointer = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointerFile}`);
             data = bson_1.default.deserialize(pointer);
@@ -210,27 +210,27 @@ class Database extends BaseClient_1.BaseClient {
         if (!container)
             throw new Error("container is not exists");
         let size = 0;
+        let newContainer = {};
         await this.sizeContainers(key)
             .then(x => {
             size = x;
         })
             .catch(err => console.error(err));
         if (AUTO_INCREMENT) {
-            let newContainer = {
+            newContainer = {
                 "id": size + 1,
                 "content": data.content
             };
-            container.containers.push(newContainer);
         }
         else {
             if (!Object.keys(data).find((Key) => Key === "id"))
                 throw new Error("Not defined \"id\" property");
-            let newContainer = {
+            newContainer = {
                 "id": data.id,
                 "content": data.content
             };
-            container.containers.push(newContainer);
         }
+        container.containers.push(newContainer);
         this.writeContainer(pointer.container, container);
     }
     /**

@@ -3,9 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../index");
 const AjaxDB = new index_1.Client({ database: "DatabaseName", path: __dirname + "/../.." }); // Important! do not put / at the end of the path
 const code = async () => {
-    //await AjaxDB.CreatePointer('Pointer', 'Container'); 
-    //await AjaxDB.push('Pointer', { "content": { "name": "Printf", "lastname": "Dead" } }, true); // Use to sotre new data without affecting the others - output: boolean
-    await AjaxDB.get('Pointer', { "name": "Printf" }).then(x => console.log(x));
+    await AjaxDB.CreatePointer("Pointer", "Container");
+    await AjaxDB.push("Pointer", { "content": { "name": "Nashe", "lastname": "XD" } }, true); // Use to sotre new data without affecting the others - output: boolean
+    //await AjaxDB.get("Pointer", { "name": "Printf" }).then(x => console.log(x));
+    AjaxDB.on("error", (error) => {
+        console.error(error);
+    });
 };
 code();
 //AjaxDB.deleteByKey('Pointer', 'lastname'); // delete key - output: boolean

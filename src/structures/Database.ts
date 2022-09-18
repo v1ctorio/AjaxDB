@@ -185,13 +185,12 @@ export class Database extends BaseClient {
     const pointersDir = fs.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
 
     for (const pointerFile of pointersDir) {
-      if ( pointerFile.slice(-5) !== key ) continue;
+      if ( pointerFile !== key+".bson" ) continue;
 
       const pointer = fs.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointerFile}`);
 
-      data = BSON.deserialize(pointer); 
+      data = BSON.deserialize(pointer);
     }
-    
     return data;
   }
 
@@ -229,9 +228,9 @@ export class Database extends BaseClient {
 
     if ( !this.CheckContainer(key) ) 
       throw new Error("Container is not exists");
-
+  
     const container = fs.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${pointer.container}.bson`);
-    
+
     return BSON.deserialize(container); 
   }
 
@@ -251,35 +250,35 @@ export class Database extends BaseClient {
     if ( !pointer )
      throw new Error("pointer is not exists");
 
-    if(!container) 
+    if ( !container ) 
       throw new Error("container is not exists");
     
     let size = 0;
+    let newContainer: object = {};
 
     await this.sizeContainers(key)
       .then(x => {
       size = x;
       })
       .catch(err => console.error(err));
-  
+
     if ( AUTO_INCREMENT ) {
-      let newContainer = {
+      newContainer = {
         "id": size+1,
         "content": data.content
       }
 
-      container.containers.push(newContainer);
     } else {
       if ( !Object.keys(data).find((Key: string) => Key === "id") ) 
         throw new Error("Not defined \"id\" property");
 
-      let newContainer = {
+      newContainer = {
         "id": data.id,
         "content": data.content
       }
-
-      container.containers.push(newContainer);
     }
+
+    container.containers.push(newContainer);
 
     this.writeContainer(pointer.container, container);
   }

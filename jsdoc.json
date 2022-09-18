@@ -7,7 +7,7 @@
     },
     "opts": {
         "recurse": true,
-        "destination": "./doc"
+        "destination": "../ajaxdb.github.io"
     },
     "templates": {
         "cleverLinks": false,
