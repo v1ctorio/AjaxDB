@@ -5,15 +5,17 @@
   "main": "out/index.js",
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "test": "node out/tests/index.js"
+    "format": "eslint . --fix --ext .ts",
+    "test": "node \"./out/tests/index.js\""
   },
   "author": "PrintfDead",
   "license": "GNU GPL3",
   "keywords": [
+    "javascript",
     "database",
-    "ajaxdb",
     "bson",
-    "efficient"
+    "efficient",
+    "nodejs"
   ],
   "repository": {
     "type": "git",

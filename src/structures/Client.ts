@@ -1,19 +1,25 @@
-import fs from 'fs';
-import { BaseClient } from './BaseClient';
-import { Database } from './Database';
+import fs from 'node:fs';
+
 import BSON from 'bson';
 
-type options = {
-  database: string;
-  path: string;
-  useEventErr?: boolean;
-}
+import { BaseClient } from './BaseClient';
+import { Database   } from './Database';
+
+interface options {
+
+  path:     string
+  database: string
+
+  useEventErr?: boolean
+};
 
 export interface Client {
-  shortPath: string;
-  database: string;
-  options: options;
-}
+
+  database:  string
+  shortPath: string
+
+  options: options
+};
 
 export class Client extends Database {
   /**
@@ -37,6 +43,7 @@ export class Client extends Database {
   }
   
   protected async CheckAndCreateFolders() {
+
     if(!fs.existsSync(this.path+"/ajax_databases/")) {
       await fs.promises.mkdir(this.path+"/ajax_databases/", {recursive: true}).catch((err) => {
         if (err) this.emit("error", err);
@@ -64,6 +71,7 @@ export class Client extends Database {
    * @returns void
    */
   public async CreatePointer(key: string, containerName: string) {
+
     if (fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${key}.bson`)) return;
     if (fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${containerName}.bson`)) return;
 
@@ -76,14 +84,18 @@ export class Client extends Database {
       "containers": [] 
     });
     
-    await fs.promises.mkdir(`${this.path}/ajax_databases/${this.database}/pointers`, { recursive: true })
+    await fs.promises
+      .mkdir(`${this.path}/ajax_databases/${this.database}/pointers`, { recursive: true })
       .then(async (x) => {
+  
         await fs.promises.writeFile(`${this.shortPath}/pointers/${key}.bson`, pointerData);
-      }).catch((err) => console.error(err));
+      })
+      .catch((err) => console.error(err));
+
     await fs.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true })
       .then(async (x) => {
         await fs.promises.writeFile(`${this.shortPath}/containers/${containerName}.bson`, containerData);
-      }).catch((err) => console.error(err));
-    return;
-  }
-}
+      })
+      .catch((err) => console.error(err));
+  };
+};

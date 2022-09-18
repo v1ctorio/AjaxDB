@@ -1,41 +1,52 @@
-import { BaseClient } from './BaseClient';
-import fs from 'fs';
+import fs from 'node:fs';
+
 import BSON, { Document } from 'bson';
 
+import { BaseClient } from './BaseClient';
+
 type options = {
-  database: string;
-  path: string;
-}
+
+  database: string
+  path:     string
+};
 
 export interface Database {
-  database: string;
-  options: options;
-  path: string;
-}
+
+  database: string
+  path:     string
+
+  options: options
+};
 
 type dataPush = {
-  id?: string | number;
-  content: object;
-}
+
+  content: object
+
+  id?: string | number
+};
 
 type editKey = {
-  key: string,
+
+  key:   string
   value: string
-}
+};
 
 export class Database extends BaseClient {
+
   /**
    * @constructor
    * @param {object} options - Put database name and path
    */
   constructor(options: options) {
+
     super();
-    this.options = options;
+
+    this.options  = options;
     this.database = options.database;
-    this.path = this.options.path;
-    if ( this.path.endsWith("/") ) 
-      this.path = this.path.slice(0, -1);
-  }
+    this.path     = this.options.path;
+
+    if (this.path.endsWith("/")) this.path = this.path.slice(0, -1);
+  };
   
   /**
    * @protected
@@ -43,11 +54,9 @@ export class Database extends BaseClient {
    * @returns boolean
    */
   protected CheckDatabaseDir() {
-    if ( fs.existsSync(this.path) ) 
-      return true;
-    else 
-      return false;
-  }
+
+    return fs.existsSync(this.path);
+  };
   
   /**
    * @protected
@@ -55,12 +64,9 @@ export class Database extends BaseClient {
    * @returns boolean
    */
   protected CheckPointersDir() {
-    if ( fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`) ) 
-      return true;
-    else 
-      return false;
-    
-  }
+
+   return fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`); 
+  };
 
   /**
    * @protected
@@ -68,11 +74,9 @@ export class Database extends BaseClient {
    * @returns boolean
    */
   protected CheckContainersDir() {
-    if ( !fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers`) )
-      return false;
-    else
-      return true;
-  }
+
+    return fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers`);
+  };
 
   /**
    * @protected
@@ -81,11 +85,9 @@ export class Database extends BaseClient {
    * @returns boolean
    */
   protected CheckPointer(pointer: string) {
-    if ( fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`) )
-      return true;
-    else
-      return false;
-  }
+
+    return fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
+  };
 
   /**
    * @protected
@@ -94,17 +96,15 @@ export class Database extends BaseClient {
    * @returns boolean
    */
   protected CheckContainer(pointer: string) {
-    if( this.CheckPointer(pointer) ) {
-      const puntero = fs.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
-      const container = BSON.deserialize(puntero).container;
-      if ( fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`) ) 
-        return true;
-      else 
-        return false;
-    } else {
-      return false;
-    }
-  }
+
+    if(!this.CheckPointer(pointer)) return false;
+
+    const puntero = fs.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
+
+    const container = BSON.deserialize(puntero).container;
+    
+    return fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`);
+  };
 
   /**
    * @protected
@@ -113,13 +113,15 @@ export class Database extends BaseClient {
    * @returns void
    */
   protected async CreatePointers() {
-    if ( !this.CheckPointersDir() ) 
-      await fs.promises.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", {recursive:true}).catch((err) => { 
-        if (err) this.emit("error", err); 
-      });
+    if (this.CheckPointersDir()) return;
+ 
+    await fs.promises
+      .mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", { recursive: true })
+      .catch((err) => { 
 
-    return;
-  }
+      if (err) this.emit("error", err); 
+    });
+  };
 
   /**
    * @protected

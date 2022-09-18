@@ -1,16 +1,25 @@
 {
     "plugins": [],
+
     "recurseDepth": 10,
+
     "source": {
-        "include": ["out"],
+
+        "include": [ "out" ],
+
         "includePattern": ".+\\.js(doc|x)?$"
     },
+
     "opts": {
-        "recurse": true,
-        "destination": "../ajaxdb.github.io"
+
+        "destination": "../ajaxdb.github.io",
+
+        "recurse": true
     },
+
     "templates": {
-        "cleverLinks": false,
+
+        "cleverLinks":    false,
         "monospaceLinks": false
     }
 }
