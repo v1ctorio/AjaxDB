@@ -9,7 +9,5 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "rules": {
-    "no-implicit-any": false
-  }
+  "rules": {"no-implicit-globals": 0, "no-implicit-any": 0, "no-explicit-any": 0, "no-unused-vars": 0}
 }

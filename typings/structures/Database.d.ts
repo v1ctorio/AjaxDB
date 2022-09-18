@@ -1,5 +1,12 @@
 import { Document } from 'bson';
 import { BaseClient } from './BaseClient';
+import crypto from 'crypto-js';
+/**
+ * @typedef DatabaseOptions
+ * @type {object}
+ * @property {string} database - Database name
+ * @property {string} path - Path to create ajax_databases folder
+ */
 declare type options = {
     database: string;
     path: string;
@@ -9,18 +16,61 @@ export interface Database {
     path: string;
     options: options;
 }
+/**
+ * @typedef PushOptions
+ * @type {object}
+ * @property {object} content - Content data to push
+ * @property {string, number}  id? - ID container (Optional)
+ */
 declare type dataPush = {
     content: object;
     id?: string | number;
 };
+/**
+ * @typedef FindOptions
+ * @type {object}
+ * @property {string} keyName - Key to find
+ * @property {string} keyValue - Value to find
+ */
+declare type findOptions = {
+    id?: string | number;
+    keyName?: string;
+    keyValue: string;
+};
+/**
+ * @typedef EditKeyOptions
+ * @type {object}
+ * @property {string} key - Key to edit
+ * @property {string} value - Value to edit
+ */
 declare type editKey = {
     key: string;
     value: string;
 };
+/**
+ * @typedef EncryptedOptions
+ * @type {object}
+ * @property {string} content - Content to be encrypted
+ * @property {number} salt - Length salt
+ */
+declare type encriptOptions = {
+    content: string;
+    salt?: number | 10;
+};
+/**
+ * @typedef DecryptedOptions
+ * @type {object}
+ * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
+ * @property {string} secretKey - Secret key generate by encrypt method
+ */
+declare type decryptOptions = {
+    encryptKey: crypto.lib.CipherParams;
+    secretKey: string;
+};
 export declare class Database extends BaseClient {
     /**
      * @constructor
-     * @param {object} options - Put database name and path
+     * @param {DatabaseOptions} options - Put database name and path
      */
     constructor(options: options);
     /**
@@ -104,7 +154,7 @@ export declare class Database extends BaseClient {
      * @async
      * @description Push the data to the container
      * @param {string} key - Pointer name
-     * @param {object} data - Data to be pushed
+     * @param {PushOptions} data - Data to be pushed
      * @param AUTO_INCREMENT
      */
     push(key: string, data: dataPush, AUTO_INCREMENT?: boolean): Promise<void>;
@@ -119,9 +169,8 @@ export declare class Database extends BaseClient {
     /**
      * @public
      * @async
+     * @deprecated
      * @description Delete multiple keys together
-     * @param {array} pointers - Pointers name
-     * @param {array} keys  - Keys name
      */
     deleteSeveralByKey(pointers: string[], keys: string[]): Promise<void>;
     /**
@@ -137,19 +186,19 @@ export declare class Database extends BaseClient {
      * @async
      * @description Get container data
      * @param {string} pointer - Pointer name
-     * @param {object} value - Data to be find for in the container
+     * @param {FindOptions} find - Data to be find for in the container
      * @returns object
      */
-    get(pointer: string, value: object | any): Promise<object>;
+    get(pointer: string, find: findOptions): Promise<object | null>;
     /**
      * @public
      * @async
      * @description Edit data container
      * @param {string} pointer - Pointer name
-     * @param {object} findKey - Find key data
-     * @param {object} editKey - Edit key data
+     * @param {FindOptions} findKey - Find key data
+     * @param {EditKeyOptions} editKey - Edit key data
      */
-    edit(pointer: string, findKey: object, editKey: editKey): Promise<void>;
+    edit(pointer: string, findKey: findOptions, editKey: editKey): Promise<void>;
     /**
      * @public
      * @description Count the pointers
@@ -157,11 +206,28 @@ export declare class Database extends BaseClient {
      */
     size(): number;
     /**
-     * @public
+     * @protected
      * @description Count the containers in containers folder
      * @param {string} pointer - Pointer name
      * @returns number
      */
-    sizeContainer(pointer: string): number | undefined;
+    protected sizeContainer(pointer: string): number | undefined;
+    /**
+     * @public
+     * @description Encrypted string
+     * @param {EncryptedOptions} options - Encrypted Options
+     * @returns object
+     */
+    encrypt(options: encriptOptions): {
+        key_encrypt: crypto.lib.CipherParams;
+        secret_key: string;
+    };
+    /**
+     * @public
+     * @description Decrypted string
+     * @param {DecryptedOptions} options - Descrypted options
+     * @returns string
+     */
+    decrypt(options: decryptOptions): string;
 }
 export {};

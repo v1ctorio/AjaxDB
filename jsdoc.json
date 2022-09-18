@@ -12,7 +12,7 @@
 
     "opts": {
 
-        "destination": "../ajaxdb.github.io",
+        "destination": "./doc",
 
         "recurse": true
     },

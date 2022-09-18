@@ -32,13 +32,16 @@ var __importDefault = (this &amp;&amp; this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Database = void 0;
-const BaseClient_1 = require("./BaseClient");
-const fs_1 = __importDefault(require("fs"));
+const node_fs_1 = __importDefault(require("node:fs"));
 const bson_1 = __importDefault(require("bson"));
+const BaseClient_1 = require("./BaseClient");
+const crypto_js_1 = __importDefault(require("crypto-js"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+;
 class Database extends BaseClient_1.BaseClient {
     /**
      * @constructor
-     * @param {object} options - Put database name and path
+     * @param {DatabaseOptions} options - Put database name and path
      */
     constructor(options) {
         super();
@@ -48,39 +51,34 @@ class Database extends BaseClient_1.BaseClient {
         if (this.path.endsWith("/"))
             this.path = this.path.slice(0, -1);
     }
+    ;
     /**
      * @protected
      * @description Check if the "ajax_databases" directory exists
      * @returns boolean
      */
     CheckDatabaseDir() {
-        if (fs_1.default.existsSync(this.path))
-            return true;
-        else
-            return false;
+        return node_fs_1.default.existsSync(this.path);
     }
+    ;
     /**
      * @protected
      * @description Check if the "pointers" directory exists
      * @returns boolean
      */
     CheckPointersDir() {
-        if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`))
-            return true;
-        else
-            return false;
+        return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`);
     }
+    ;
     /**
      * @protected
      * @description Check if the "containers" directory exists
      * @returns boolean
      */
     CheckContainersDir() {
-        if (!fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers`))
-            return false;
-        else
-            return true;
+        return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers`);
     }
+    ;
     /**
      * @protected
      * @description Check if the pointer file exists
@@ -88,11 +86,9 @@ class Database extends BaseClient_1.BaseClient {
      * @returns boolean
      */
     CheckPointer(pointer) {
-        if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`))
-            return true;
-        else
-            return false;
+        return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
     }
+    ;
     /**
      * @protected
      * @description Check if the container file exists
@@ -100,18 +96,13 @@ class Database extends BaseClient_1.BaseClient {
      * @returns boolean
      */
     CheckContainer(pointer) {
-        if (this.CheckPointer(pointer)) {
-            const puntero = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
-            const container = bson_1.default.deserialize(puntero).container;
-            if (fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`))
-                return true;
-            else
-                return false;
-        }
-        else {
+        if (!this.CheckPointer(pointer))
             return false;
-        }
+        const puntero = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
+        const container = bson_1.default.deserialize(puntero).container;
+        return node_fs_1.default.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`);
     }
+    ;
     /**
      * @protected
      * @async
@@ -119,13 +110,16 @@ class Database extends BaseClient_1.BaseClient {
      * @returns void
      */
     async CreatePointers() {
-        if (!this.CheckPointersDir())
-            await fs_1.default.promises.mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", { recursive: true }).catch((err) => {
-                if (err)
-                    this.emit("error", err);
-            });
-        return;
+        if (this.CheckPointersDir())
+            return;
+        await node_fs_1.default.promises
+            .mkdir(this.path + "/ajax_databases/" + this.database + "/pointers", { recursive: true })
+            .catch((err) => {
+            if (err)
+                this.emit("error", err);
+        });
     }
+    ;
     /**
      * @protected
      * @async
@@ -133,8 +127,8 @@ class Database extends BaseClient_1.BaseClient {
      * @returns void
      */
     async CreateContainers() {
-        if (!fs_1.default.existsSync(this.path + "/ajax_databases/" + this.database + "/containers")) {
-            await fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true }).catch((err) => {
+        if (!node_fs_1.default.existsSync(this.path + "/ajax_databases/" + this.database + "/containers")) {
+            await node_fs_1.default.promises.mkdir(`${this.path}/ajax_databases/${this.database}/containers`, { recursive: true }).catch((err) => {
                 if (err)
                     this.emit("error", err);
             });
@@ -148,7 +142,7 @@ class Database extends BaseClient_1.BaseClient {
      * @param {object} value - Container new data
      */
     writeContainer(container, value) {
-        fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`, bson_1.default.serialize(value), (err) => {
+        node_fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`, bson_1.default.serialize(value), (err) => {
             if (err)
                 this.emit("error", err);
         });
@@ -160,7 +154,7 @@ class Database extends BaseClient_1.BaseClient {
      * @param {object} value  - Pointer new data
      */
     writePointer(pointer, value) {
-        fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, bson_1.default.serialize(value), (err) => {
+        node_fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, bson_1.default.serialize(value), (err) => {
             if (err)
                 this.emit("error", err);
         });
@@ -182,11 +176,11 @@ class Database extends BaseClient_1.BaseClient {
         let data = {};
         if (!this.CheckPointer(key))
             throw new Error("Pointer is not exists");
-        const pointersDir = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
+        const pointersDir = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
         for (const pointerFile of pointersDir) {
-            if (pointerFile.slice(-5) !== key)
+            if (pointerFile !== key + ".bson")
                 continue;
-            const pointer = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointerFile}`);
+            const pointer = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointerFile}`);
             data = bson_1.default.deserialize(pointer);
         }
         return data;
@@ -219,7 +213,7 @@ class Database extends BaseClient_1.BaseClient {
             throw new Error("pointer is not exists");
         if (!this.CheckContainer(key))
             throw new Error("Container is not exists");
-        const container = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${pointer.container}.bson`);
+        const container = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${pointer.container}.bson`);
         return bson_1.default.deserialize(container);
     }
     /**
@@ -227,7 +221,7 @@ class Database extends BaseClient_1.BaseClient {
      * @async
      * @description Push the data to the container
      * @param {string} key - Pointer name
-     * @param {object} data - Data to be pushed
+     * @param {PushOptions} data - Data to be pushed
      * @param AUTO_INCREMENT
      */
     async push(key, data, AUTO_INCREMENT) {
@@ -238,27 +232,27 @@ class Database extends BaseClient_1.BaseClient {
         if (!container)
             throw new Error("container is not exists");
         let size = 0;
+        let newContainer = {};
         await this.sizeContainers(key)
             .then(x => {
             size = x;
         })
             .catch(err => console.error(err));
         if (AUTO_INCREMENT) {
-            let newContainer = {
+            newContainer = {
                 "id": size + 1,
                 "content": data.content
             };
-            container.containers.push(newContainer);
         }
         else {
             if (!Object.keys(data).find((Key) => Key === "id"))
                 throw new Error("Not defined \"id\" property");
-            let newContainer = {
+            newContainer = {
                 "id": data.id,
                 "content": data.content
             };
-            container.containers.push(newContainer);
         }
+        container.containers.push(newContainer);
         this.writeContainer(pointer.container, container);
     }
     /**
@@ -281,18 +275,11 @@ class Database extends BaseClient_1.BaseClient {
     /**
      * @public
      * @async
+     * @deprecated
      * @description Delete multiple keys together
-     * @param {array} pointers - Pointers name
-     * @param {array} keys  - Keys name
      */
     async deleteSeveralByKey(pointers, keys) {
-        pointers.forEach((x) => {
-            if (!this.CheckPointer(x))
-                throw new Error("Pointer is not exists");
-            keys.forEach(async (y) => {
-                await this.deleteByKey(x, y).catch(err => console.error(err));
-            });
-        });
+        console.log("[!] Method id deprecated.");
     }
     /**
      * @public
@@ -319,20 +306,20 @@ class Database extends BaseClient_1.BaseClient {
      * @async
      * @description Get container data
      * @param {string} pointer - Pointer name
-     * @param {object} value - Data to be find for in the container
+     * @param {FindOptions} find - Data to be find for in the container
      * @returns object
      */
-    async get(pointer, value) {
+    async get(pointer, find) {
         let c = await this.findContainer(pointer).catch(err => console.error(err));
-        let data = Object.keys(value);
-        let entries = Object.entries(value);
+        let data = Object.keys(find);
+        let entries = Object.entries(find);
         let result = {};
         if (!c)
             throw new Error("Container is not exist");
         c.containers.forEach((container) => {
             data.forEach((key, index) => {
                 if (data.find(key => key === "id")) {
-                    if (container.id === value.id)
+                    if (container.id === find.id)
                         result = container;
                 }
                 let keys = Object.keys(container.content);
@@ -344,6 +331,8 @@ class Database extends BaseClient_1.BaseClient {
                 });
             });
         });
+        if (Object.entries(result).length === 0)
+            return null;
         return result;
     }
     /**
@@ -351,8 +340,8 @@ class Database extends BaseClient_1.BaseClient {
      * @async
      * @description Edit data container
      * @param {string} pointer - Pointer name
-     * @param {object} findKey - Find key data
-     * @param {object} editKey - Edit key data
+     * @param {FindOptions} findKey - Find key data
+     * @param {EditKeyOptions} editKey - Edit key data
      */
     async edit(pointer, findKey, editKey) {
         let pointerData = await this.findPointer(pointer).catch(err => console.error(err));
@@ -369,9 +358,12 @@ class Database extends BaseClient_1.BaseClient {
             if (!Object.keys(editKey).find(key => key === "value"))
                 throw new Error("key is not defined");
             container?.containers.forEach((x, y) => {
-                if (x[y].content[editKey.key])
-                    if (container != undefined)
+                if (x.id === data.id) {
+                    if (x.content[editKey.key]) {
                         data.content[editKey.key] = editKey.value;
+                        container.containers[y] = data;
+                    }
+                }
             });
             this.writeContainer(pointerData.container, container);
         }).catch(err => console.error(err));
@@ -382,7 +374,7 @@ class Database extends BaseClient_1.BaseClient {
      * @returns number
      */
     size() {
-        let dirs = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
+        let dirs = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
         let count = 0;
         for (const file of dirs) {
             count += 1;
@@ -390,7 +382,7 @@ class Database extends BaseClient_1.BaseClient {
         return count;
     }
     /**
-     * @public
+     * @protected
      * @description Count the containers in containers folder
      * @param {string} pointer - Pointer name
      * @returns number
@@ -398,15 +390,38 @@ class Database extends BaseClient_1.BaseClient {
     sizeContainer(pointer) {
         if (!this.CheckPointer(pointer))
             return;
-        let containers = fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
+        let containers = node_fs_1.default.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
         let size = 0;
         for (const container of containers) {
-            let containerFile = fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
+            let containerFile = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
             let data = bson_1.default.deserialize(containerFile);
             if (data.pointer === pointer)
                 size += 1;
         }
         return size;
+    }
+    /**
+     * @public
+     * @description Encrypted string
+     * @param {EncryptedOptions} options - Encrypted Options
+     * @returns object
+     */
+    encrypt(options) {
+        const salt = bcryptjs_1.default.genSaltSync(options.salt);
+        const hash = bcryptjs_1.default.hashSync(options.content, salt);
+        const encryptKey = crypto_js_1.default.AES.encrypt(options.content, hash);
+        return { key_encrypt: encryptKey, secret_key: hash };
+    }
+    /**
+     * @public
+     * @description Decrypted string
+     * @param {DecryptedOptions} options - Descrypted options
+     * @returns string
+     */
+    decrypt(options) {
+        const bytes = crypto_js_1.default.AES.decrypt(options.encryptKey, options.secretKey);
+        const decryptedData = bytes.toString(crypto_js_1.default.enc.Utf8);
+        return decryptedData;
     }
 }
 exports.Database = Database;
@@ -426,7 +441,7 @@ exports.Database = Database;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Sep 16 2022 21:41:20 GMT-0300 (Argentina Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Sep 18 2022 05:56:22 GMT-0300 (Argentina Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

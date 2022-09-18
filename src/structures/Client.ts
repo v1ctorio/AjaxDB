@@ -5,7 +5,14 @@ import BSON from 'bson';
 import { BaseClient } from './BaseClient';
 import { Database   } from './Database';
 
-interface options {
+/**
+ * @typedef ClientOptions
+ * @type {object}
+ * @property {string} path - Path to create ajax_database folder
+ * @property {string} database - Database name
+ * @property {boolean} useEventErr - (Optional) Use event error or not
+ */
+type options = {
 
   path:     string
   database: string
@@ -19,12 +26,12 @@ export interface Client {
   shortPath: string
 
   options: options
-};
+}
 
 export class Client extends Database {
   /**
    * 
-   * @param {object} options - Put database name and path 
+   * @param {ClientOptions} options - Put database name and path 
    */
   constructor(options: options) {
     super({ database: options.database, path: options.path });
@@ -97,5 +104,5 @@ export class Client extends Database {
         await fs.promises.writeFile(`${this.shortPath}/containers/${containerName}.bson`, containerData);
       })
       .catch((err) => console.error(err));
-  };
-};
+  }
+}

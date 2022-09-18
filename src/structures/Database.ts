@@ -4,6 +4,15 @@ import BSON, { Document } from 'bson';
 
 import { BaseClient } from './BaseClient';
 
+import crypto from 'crypto-js';
+import bcrypt from 'bcryptjs';
+
+/**
+ * @typedef DatabaseOptions
+ * @type {object}
+ * @property {string} database - Database name
+ * @property {string} path - Path to create ajax_databases folder
+ */
 type options = {
 
   database: string
@@ -16,8 +25,14 @@ export interface Database {
   path:     string
 
   options: options
-};
+}
 
+/**
+ * @typedef PushOptions
+ * @type {object}
+ * @property {object} content - Content data to push
+ * @property {string, number}  id? - ID container (Optional)
+ */
 type dataPush = {
 
   content: object
@@ -25,17 +40,76 @@ type dataPush = {
   id?: string | number
 };
 
+/**
+ * @typedef FindOptions
+ * @type {object}
+ * @property {string} keyName - Key to find
+ * @property {string} keyValue - Value to find
+ */
+type findOptions = {
+  id?: string | number,
+  keyName?: string,
+  keyValue: string
+}
+
+/**
+ * @typedef EditKeyOptions
+ * @type {object}
+ * @property {string} key - Key to edit
+ * @property {string} value - Value to edit
+ */
 type editKey = {
 
   key:   string
   value: string
 };
 
+/**
+ * @typedef editOptions
+ * @type {object}
+ * @property {FindOptions}  find - Find options
+ * @property {EditKeyOptions} edit - Edit key options
+ */
+type editOptions = {
+  find: findOptions,
+  edit: editKey
+}
+
+/**
+ * @typedef EncryptedOptions
+ * @type {object}
+ * @property {string} content - Content to be encrypted
+ * @property {number} salt - Length salt
+ */
+type encriptOptions = {
+
+  content: string,
+
+  salt?: number | 10
+}
+
+type CipherParams = typeof crypto.lib.CipherParams;
+
+/**
+ * @typedef DecryptedOptions
+ * @type {object}
+ * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
+ * @property {string} secretKey - Secret key generate by encrypt method
+ */
+type decryptOptions = {
+
+  encryptKey: crypto.lib.CipherParams,
+  
+  secretKey: string
+}
+
+
+
 export class Database extends BaseClient {
 
   /**
    * @constructor
-   * @param {object} options - Put database name and path
+   * @param {DatabaseOptions} options - Put database name and path
    */
   constructor(options: options) {
 
@@ -46,7 +120,7 @@ export class Database extends BaseClient {
     this.path     = this.options.path;
 
     if (this.path.endsWith("/")) this.path = this.path.slice(0, -1);
-  };
+  }
   
   /**
    * @protected
@@ -56,7 +130,7 @@ export class Database extends BaseClient {
   protected CheckDatabaseDir() {
 
     return fs.existsSync(this.path);
-  };
+  }
   
   /**
    * @protected
@@ -66,7 +140,7 @@ export class Database extends BaseClient {
   protected CheckPointersDir() {
 
    return fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers`); 
-  };
+  }
 
   /**
    * @protected
@@ -76,7 +150,7 @@ export class Database extends BaseClient {
   protected CheckContainersDir() {
 
     return fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers`);
-  };
+  }
 
   /**
    * @protected
@@ -87,7 +161,7 @@ export class Database extends BaseClient {
   protected CheckPointer(pointer: string) {
 
     return fs.existsSync(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`);
-  };
+  }
 
   /**
    * @protected
@@ -104,7 +178,7 @@ export class Database extends BaseClient {
     const container = BSON.deserialize(puntero).container;
     
     return fs.existsSync(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`);
-  };
+  }
 
   /**
    * @protected
@@ -121,7 +195,7 @@ export class Database extends BaseClient {
 
       if (err) this.emit("error", err); 
     });
-  };
+  }
 
   /**
    * @protected
@@ -241,13 +315,13 @@ export class Database extends BaseClient {
    * @async
    * @description Push the data to the container
    * @param {string} key - Pointer name 
-   * @param {object} data - Data to be pushed
+   * @param {PushOptions} data - Data to be pushed
    * @param AUTO_INCREMENT 
    */
   public async push(key: string, data: dataPush, AUTO_INCREMENT?: boolean) {
     const pointer = await this.findPointer(key).catch(err => console.error(err));
 
-    let container = await this.findContainer(key).catch(err => console.error(err));
+    const container = await this.findContainer(key).catch(err => console.error(err));
 
     if ( !pointer )
      throw new Error("pointer is not exists");
@@ -309,19 +383,11 @@ export class Database extends BaseClient {
   /**
    * @public 
    * @async
+   * @deprecated
    * @description Delete multiple keys together
-   * @param {array} pointers - Pointers name 
-   * @param {array} keys  - Keys name
    */
   public async deleteSeveralByKey(pointers: string[], keys: string[]) {
-    pointers.forEach((x: string) => {
-      if ( !this.CheckPointer(x) ) 
-        throw new Error("Pointer is not exists");
-
-      keys.forEach(async (y: string) => {
-        await this.deleteByKey(x, y).catch(err => console.error(err));
-      });
-    });
+    console.log("[!] Method id deprecated."); 
   }
 
   /**
@@ -353,13 +419,13 @@ export class Database extends BaseClient {
    * @async
    * @description Get container data
    * @param {string} pointer - Pointer name
-   * @param {object} value - Data to be find for in the container
+   * @param {FindOptions} find - Data to be find for in the container
    * @returns object
    */
-  public async get(pointer: string, value: object | any) {
-    let c = await this.findContainer(pointer).catch(err => console.error(err));
-    let data = Object.keys(value);
-    let entries = Object.entries(value);
+  public async get(pointer: string, find: findOptions) {
+    const c = await this.findContainer(pointer).catch(err => console.error(err));
+    const data = Object.keys(find);
+    const entries = Object.entries(find);
     let result: object = {};
 
     if ( !c ) 
@@ -369,12 +435,12 @@ export class Database extends BaseClient {
       data.forEach((key: string, index: number) => {
         if ( data.find(key => key === "id") ) {
 
-          if ( container.id === value.id )
+          if ( container.id === find.id )
             result = container;
           
         }
         
-        let keys = Object.keys(container.content);
+        const keys = Object.keys(container.content);
 
         keys.forEach(x => {
           if ( x === key ) {
@@ -386,6 +452,9 @@ export class Database extends BaseClient {
         });
       });
     });
+    
+    if ( Object.entries(result).length === 0 )
+      return null;
 
     return result;
   }
@@ -395,18 +464,20 @@ export class Database extends BaseClient {
    * @async
    * @description Edit data container
    * @param {string} pointer - Pointer name 
-   * @param {object} findKey - Find key data 
-   * @param {object} editKey - Edit key data
+   * @param {EditOptions} editOptions - Edit options 
    */
-  public async edit(pointer: string, findKey: object, editKey: editKey) {
-    let pointerData: any = await this.findPointer(pointer).catch(err => console.error(err));
-    let container: any = await this.findContainer(pointer).catch(err => console.error(err));
+  public async edit(pointer: string, editOptions: editOptions) {
+    const pointerData: any = await this.findPointer(pointer).catch(err => console.error(err));
+    const container: any = await this.findContainer(pointer).catch(err => console.error(err));
 
     if ( !container ) 
       throw new Error("Container is not exists");
 
     if ( !pointerData ) 
       throw new Error("Pointer is not exist");
+
+    const findKey = editOptions.find;
+    const editKey = editOptions.edit;
     
     await this.get(pointer, findKey).then((data: any) => {
       if (!data) 
@@ -419,8 +490,12 @@ export class Database extends BaseClient {
         throw new Error("key is not defined");
 
       container?.containers.forEach((x: any, y: number) => {
-        if(x[y].content[editKey.key])
-          if (container != undefined) data.content[editKey.key] = editKey.value;
+        if(x.id === data.id) {
+          if(x.content[editKey.key]) {
+            data.content[editKey.key] = editKey.value;
+            container.containers[y] = data;
+          }
+        }       
       });
 
       this.writeContainer(pointerData.container, container);
@@ -434,7 +509,7 @@ export class Database extends BaseClient {
    * @returns number
    */
   public size() {
-    let dirs = fs.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
+    const dirs = fs.readdirSync(`${this.path}/ajax_databases/${this.database}/pointers`);
     let count = 0;
 
     for (const file of dirs) {
@@ -445,27 +520,55 @@ export class Database extends BaseClient {
   }
 
   /**
-   * @public
+   * @protected
    * @description Count the containers in containers folder
    * @param {string} pointer - Pointer name 
    * @returns number
    */
-  public sizeContainer(pointer: string) {
+  protected sizeContainer(pointer: string) {
     if ( !this.CheckPointer(pointer) ) 
       return;
 
-    let containers = fs.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
+    const containers = fs.readdirSync(`${this.path}/ajax_databases/${this.database}/containers`);
 
     let size = 0;
 
     for (const container of containers) {
-      let containerFile = fs.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
+      const containerFile = fs.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${container}`);
 
-      let data = BSON.deserialize(containerFile);
+      const data = BSON.deserialize(containerFile);
 
       if (data.pointer === pointer) 
         size += 1;
     }
     return size;
-  } 
+
+  }
+
+  /**
+   * @public
+   * @description Encrypted string
+   * @param {EncryptedOptions} options - Encrypted Options
+   * @returns object
+   */
+  public encrypt(options: encriptOptions) {
+    const salt = bcrypt.genSaltSync(options.salt);
+    const hash = bcrypt.hashSync(options.content, salt);
+    const encryptKey = crypto.AES.encrypt(options.content, hash); 
+
+    return { key_encrypt: encryptKey, secret_key: hash };
+  }
+
+  /**
+   * @public
+   * @description Decrypted string
+   * @param {DecryptedOptions} options - Descrypted options 
+   * @returns string
+   */
+  public decrypt(options: decryptOptions) {
+    const bytes = crypto.AES.decrypt(options.encryptKey, options.secretKey);
+    const decryptedData = bytes.toString(crypto.enc.Utf8);
+
+    return decryptedData;
+  }
 }

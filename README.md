@@ -120,6 +120,24 @@ AjaxDB.size() // OUTPUT: number
 
 await AjaxDB.edit("PointerName", { "FindKey": "ValueKey" }, { "key": "KeyName", "value": "ValueForKey" }); // void
 ```
+- `encrypt`
+```ts
+/**
+ * @param {EncryptOptions} options - Options encrypt data
+ * @description Encrypt string data
+ * @output {key_encrypted: string, secret_key: string}
+ */
+const encryptData = AjaxDB.encrypt({ content: string, salt?: number });
+```
+- `decrypt`
+```ts
+/** 
+ * @param {DecryptOptions} options - Options decrypt data
+ * @description Decrypt string
+ * @output <Crypto-JS>.lib.CipherParams
+*/
+const decryptedData = AjaxDB.decrypt({ encryptKey: encryptData.key_encrypted.toString(), secretKey: encryptData.secret_key});
+```
 
 ## Development notes
 - The database is in the testing phase, report any errors.

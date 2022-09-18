@@ -13,11 +13,8 @@
     "declarationDir": "./typings",
     "typeRoots": [
       "node_modules/@types",
-      "mysql",
       "bcryptjs",
-      "fs",
-      "discord.js",
-      "@discordjs/rest"
+      "bson"
     ],
     "types": ["node"]
   },

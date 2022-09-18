@@ -7,11 +7,13 @@ exports.Database = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const bson_1 = __importDefault(require("bson"));
 const BaseClient_1 = require("./BaseClient");
+const crypto_js_1 = __importDefault(require("crypto-js"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 ;
 class Database extends BaseClient_1.BaseClient {
     /**
      * @constructor
-     * @param {object} options - Put database name and path
+     * @param {DatabaseOptions} options - Put database name and path
      */
     constructor(options) {
         super();
@@ -191,7 +193,7 @@ class Database extends BaseClient_1.BaseClient {
      * @async
      * @description Push the data to the container
      * @param {string} key - Pointer name
-     * @param {object} data - Data to be pushed
+     * @param {PushOptions} data - Data to be pushed
      * @param AUTO_INCREMENT
      */
     async push(key, data, AUTO_INCREMENT) {
@@ -245,18 +247,11 @@ class Database extends BaseClient_1.BaseClient {
     /**
      * @public
      * @async
+     * @deprecated
      * @description Delete multiple keys together
-     * @param {array} pointers - Pointers name
-     * @param {array} keys  - Keys name
      */
     async deleteSeveralByKey(pointers, keys) {
-        pointers.forEach((x) => {
-            if (!this.CheckPointer(x))
-                throw new Error("Pointer is not exists");
-            keys.forEach(async (y) => {
-                await this.deleteByKey(x, y).catch(err => console.error(err));
-            });
-        });
+        console.log("[!] Method id deprecated.");
     }
     /**
      * @public
@@ -283,20 +278,20 @@ class Database extends BaseClient_1.BaseClient {
      * @async
      * @description Get container data
      * @param {string} pointer - Pointer name
-     * @param {object} value - Data to be find for in the container
+     * @param {FindOptions} find - Data to be find for in the container
      * @returns object
      */
-    async get(pointer, value) {
+    async get(pointer, find) {
         let c = await this.findContainer(pointer).catch(err => console.error(err));
-        let data = Object.keys(value);
-        let entries = Object.entries(value);
+        let data = Object.keys(find);
+        let entries = Object.entries(find);
         let result = {};
         if (!c)
             throw new Error("Container is not exist");
         c.containers.forEach((container) => {
             data.forEach((key, index) => {
                 if (data.find(key => key === "id")) {
-                    if (container.id === value.id)
+                    if (container.id === find.id)
                         result = container;
                 }
                 let keys = Object.keys(container.content);
@@ -308,6 +303,8 @@ class Database extends BaseClient_1.BaseClient {
                 });
             });
         });
+        if (Object.entries(result).length === 0)
+            return null;
         return result;
     }
     /**
@@ -315,8 +312,8 @@ class Database extends BaseClient_1.BaseClient {
      * @async
      * @description Edit data container
      * @param {string} pointer - Pointer name
-     * @param {object} findKey - Find key data
-     * @param {object} editKey - Edit key data
+     * @param {FindOptions} findKey - Find key data
+     * @param {EditKeyOptions} editKey - Edit key data
      */
     async edit(pointer, findKey, editKey) {
         let pointerData = await this.findPointer(pointer).catch(err => console.error(err));
@@ -333,9 +330,12 @@ class Database extends BaseClient_1.BaseClient {
             if (!Object.keys(editKey).find(key => key === "value"))
                 throw new Error("key is not defined");
             container?.containers.forEach((x, y) => {
-                if (x[y].content[editKey.key])
-                    if (container != undefined)
+                if (x.id === data.id) {
+                    if (x.content[editKey.key]) {
                         data.content[editKey.key] = editKey.value;
+                        container.containers[y] = data;
+                    }
+                }
             });
             this.writeContainer(pointerData.container, container);
         }).catch(err => console.error(err));
@@ -354,7 +354,7 @@ class Database extends BaseClient_1.BaseClient {
         return count;
     }
     /**
-     * @public
+     * @protected
      * @description Count the containers in containers folder
      * @param {string} pointer - Pointer name
      * @returns number
@@ -371,6 +371,29 @@ class Database extends BaseClient_1.BaseClient {
                 size += 1;
         }
         return size;
+    }
+    /**
+     * @public
+     * @description Encrypted string
+     * @param {EncryptedOptions} options - Encrypted Options
+     * @returns object
+     */
+    encrypt(options) {
+        const salt = bcryptjs_1.default.genSaltSync(options.salt);
+        const hash = bcryptjs_1.default.hashSync(options.content, salt);
+        const encryptKey = crypto_js_1.default.AES.encrypt(options.content, hash);
+        return { key_encrypt: encryptKey, secret_key: hash };
+    }
+    /**
+     * @public
+     * @description Decrypted string
+     * @param {DecryptedOptions} options - Descrypted options
+     * @returns string
+     */
+    decrypt(options) {
+        const bytes = crypto_js_1.default.AES.decrypt(options.encryptKey, options.secretKey);
+        const decryptedData = bytes.toString(crypto_js_1.default.enc.Utf8);
+        return decryptedData;
     }
 }
 exports.Database = Database;

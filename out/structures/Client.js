@@ -8,11 +8,10 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const bson_1 = __importDefault(require("bson"));
 const Database_1 = require("./Database");
 ;
-;
 class Client extends Database_1.Database {
     /**
      *
-     * @param {object} options - Put database name and path
+     * @param {ClientOptions} options - Put database name and path
      */
     constructor(options) {
         super({ database: options.database, path: options.path });
