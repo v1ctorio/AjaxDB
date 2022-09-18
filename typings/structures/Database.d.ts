@@ -1,11 +1,6 @@
 import { Document } from 'bson';
 import { BaseClient } from './BaseClient';
 import crypto from 'crypto-js';
-/**
- * @typedef {object} DatabaseOptions
- * @property {string} database - Database name
- * @property {string} path - Path to create ajax_databases folder
- */
 declare type options = {
     database: string;
     path: string;
@@ -15,62 +10,37 @@ export interface Database {
     path: string;
     options: options;
 }
-/**
- * @typedef {object} PushOptions
- * @property {object} content - Content data to push
- * @property {string, number}  id? - ID container (Optional)
- */
 declare type dataPush = {
     content: object;
     id?: string | number;
 };
-/**
- * @typedef {object} FindOptions
- * @property {string} keyName - Key to find
- * @property {string} keyValue - Value to find
- */
 declare type findOptions = {
     id?: string | number;
     keyName?: string;
     keyValue: string;
 };
-/**
- * @typedef {object} EditKeyOptions
- * @property {string} key - Key to edit
- * @property {string} value - Value to edit
- */
 declare type editKey = {
     key: string;
     value: string;
 };
-/**
- * @typedef {object} editOptions
- * @property {FindOptions}  find - Find options
- * @property {EditKeyOptions} edit - Edit key options
- */
 declare type editOptions = {
     find: findOptions;
     edit: editKey;
 };
-/**
- * @typedef {object} EncryptedOptions
- * @property {string} content - Content to be encrypted
- * @property {number} salt - Length salt
- */
 declare type encriptOptions = {
     content: string;
     salt?: number | 10;
 };
-/**
- * @typedef {object} DecryptedOptions
- * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
- * @property {string} secretKey - Secret key generate by encrypt method
- */
 declare type decryptOptions = {
     encryptKey: crypto.lib.CipherParams;
     secretKey: string;
 };
 export declare class Database extends BaseClient {
+    /**
+   * @typedef {Object} DatabaseOptions
+   * @property {string} database - Database name
+   * @property {string} path - Path to create ajax_databases folder
+   */
     /**
      * @constructor
      * @param {DatabaseOptions} options - Put database name and path
@@ -126,14 +96,14 @@ export declare class Database extends BaseClient {
      * @protected
      * @description Write container file
      * @param {string} container - container name
-     * @param {object} value - Container new data
+     * @param {Object} value - Container new data
      */
     protected writeContainer(container: string, value: object): void;
     /**
      * @protected
      * @description write container pointer
      * @param {string} pointer - Pointer name
-     * @param {object} value  - Pointer new data
+     * @param {Object} value  - Pointer new data
      */
     protected writePointer(pointer: string, value: object): void;
     /**
@@ -152,6 +122,11 @@ export declare class Database extends BaseClient {
      * @returns object
      */
     protected findContainer(keyOfPointer: string): Promise<Document | undefined>;
+    /**
+   * @typedef {Object} PushOptions
+   * @property {Object} content - Content data to push
+   * @property {?(string|number)}  id? - ID container (Optional)
+   */
     /**
      * @public
      * @async
@@ -185,6 +160,11 @@ export declare class Database extends BaseClient {
      */
     deleteByKey(pointer: string, key: string): Promise<void>;
     /**
+   * @typedef {Object} FindOptions
+   * @property {string} keyName - Key to find
+   * @property {string} keyValue - Value to find
+   */
+    /**
      * @public
      * @async
      * @description Get container data
@@ -193,6 +173,16 @@ export declare class Database extends BaseClient {
      * @returns object
      */
     get(pointer: string, find: findOptions): Promise<object | null>;
+    /**
+   * @typedef {Object} EditKeyOptions
+   * @property {string} key - Key to edit
+   * @property {string} value - Value to edit
+   */
+    /**
+   * @typedef {Object} EditOptions
+   * @property {FindOptions}  find - Find options
+   * @property {EditKeyOptions} edit - Edit key options
+   */
     /**
      * @public
      * @async
@@ -215,6 +205,11 @@ export declare class Database extends BaseClient {
      */
     protected sizeContainer(pointer: string): number | undefined;
     /**
+   * @typedef {Object} EncryptedOptions
+   * @property {string} content - Content to be encrypted
+   * @property {?number} [salt=10] - Length salt
+   */
+    /**
      * @public
      * @description Encrypted string
      * @param {EncryptedOptions} options - Encrypted Options
@@ -224,6 +219,11 @@ export declare class Database extends BaseClient {
         key_encrypt: crypto.lib.CipherParams;
         secret_key: string;
     };
+    /**
+   * @typedef {Object} DecryptedOptions
+   * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
+   * @property {string} secretKey - Secret key generate by encrypt method
+   */
     /**
      * @public
      * @description Decrypted string

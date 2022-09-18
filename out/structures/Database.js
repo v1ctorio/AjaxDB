@@ -11,6 +11,11 @@ const crypto_js_1 = __importDefault(require("crypto-js"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 class Database extends BaseClient_1.BaseClient {
     /**
+   * @typedef {Object} DatabaseOptions
+   * @property {string} database - Database name
+   * @property {string} path - Path to create ajax_databases folder
+   */
+    /**
      * @constructor
      * @param {DatabaseOptions} options - Put database name and path
      */
@@ -103,7 +108,7 @@ class Database extends BaseClient_1.BaseClient {
      * @protected
      * @description Write container file
      * @param {string} container - container name
-     * @param {object} value - Container new data
+     * @param {Object} value - Container new data
      */
     writeContainer(container, value) {
         node_fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`, bson_1.default.serialize(value), (err) => {
@@ -115,7 +120,7 @@ class Database extends BaseClient_1.BaseClient {
      * @protected
      * @description write container pointer
      * @param {string} pointer - Pointer name
-     * @param {object} value  - Pointer new data
+     * @param {Object} value  - Pointer new data
      */
     writePointer(pointer, value) {
         node_fs_1.default.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, bson_1.default.serialize(value), (err) => {
@@ -180,6 +185,11 @@ class Database extends BaseClient_1.BaseClient {
         const container = node_fs_1.default.readFileSync(`${this.path}/ajax_databases/${this.database}/containers/${pointer.container}.bson`);
         return bson_1.default.deserialize(container);
     }
+    /**
+   * @typedef {Object} PushOptions
+   * @property {Object} content - Content data to push
+   * @property {?(string|number)}  id? - ID container (Optional)
+   */
     /**
      * @public
      * @async
@@ -266,6 +276,11 @@ class Database extends BaseClient_1.BaseClient {
         this.writeContainer(puntero.container, container);
     }
     /**
+   * @typedef {Object} FindOptions
+   * @property {string} keyName - Key to find
+   * @property {string} keyValue - Value to find
+   */
+    /**
      * @public
      * @async
      * @description Get container data
@@ -299,6 +314,16 @@ class Database extends BaseClient_1.BaseClient {
             return null;
         return result;
     }
+    /**
+   * @typedef {Object} EditKeyOptions
+   * @property {string} key - Key to edit
+   * @property {string} value - Value to edit
+   */
+    /**
+   * @typedef {Object} EditOptions
+   * @property {FindOptions}  find - Find options
+   * @property {EditKeyOptions} edit - Edit key options
+   */
     /**
      * @public
      * @async
@@ -366,6 +391,11 @@ class Database extends BaseClient_1.BaseClient {
         return size;
     }
     /**
+   * @typedef {Object} EncryptedOptions
+   * @property {string} content - Content to be encrypted
+   * @property {?number} [salt=10] - Length salt
+   */
+    /**
      * @public
      * @description Encrypted string
      * @param {EncryptedOptions} options - Encrypted Options
@@ -377,6 +407,11 @@ class Database extends BaseClient_1.BaseClient {
         const encryptKey = crypto_js_1.default.AES.encrypt(options.content, hash);
         return { key_encrypt: encryptKey, secret_key: hash };
     }
+    /**
+   * @typedef {Object} DecryptedOptions
+   * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
+   * @property {string} secretKey - Secret key generate by encrypt method
+   */
     /**
      * @public
      * @description Decrypted string

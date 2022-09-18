@@ -9,7 +9,12 @@ const bson_1 = __importDefault(require("bson"));
 const Database_1 = require("./Database");
 class Client extends Database_1.Database {
     /**
-     *
+      * @typedef  {Object}ClientOptions
+      * @property {string} path - Path to create ajax_database folder
+      * @property {string} database - Database name
+      * @property {boolean} useEventErr - (Optional) Use event error or not
+    */
+    /**
      * @param {ClientOptions} options - Put database name and path
      */
     constructor(options) {

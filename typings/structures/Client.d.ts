@@ -1,10 +1,4 @@
 import { Database } from './Database';
-/**
- * @typedef  {object}ClientOptions
- * @property {string} path - Path to create ajax_database folder
- * @property {string} database - Database name
- * @property {boolean} useEventErr - (Optional) Use event error or not
- */
 declare type options = {
     path: string;
     database: string;
@@ -17,7 +11,12 @@ export interface Client {
 }
 export declare class Client extends Database {
     /**
-     *
+      * @typedef  {Object}ClientOptions
+      * @property {string} path - Path to create ajax_database folder
+      * @property {string} database - Database name
+      * @property {boolean} useEventErr - (Optional) Use event error or not
+    */
+    /**
      * @param {ClientOptions} options - Put database name and path
      */
     constructor(options: options);

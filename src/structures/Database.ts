@@ -7,11 +7,6 @@ import { BaseClient } from './BaseClient';
 import crypto from 'crypto-js';
 import bcrypt from 'bcryptjs';
 
-/**
- * @typedef {object} DatabaseOptions
- * @property {string} database - Database name
- * @property {string} path - Path to create ajax_databases folder
- */
 type options = {
 
   database: string
@@ -26,11 +21,6 @@ export interface Database {
   options: options
 }
 
-/**
- * @typedef {object} PushOptions
- * @property {object} content - Content data to push
- * @property {string, number}  id? - ID container (Optional)
- */
 type dataPush = {
 
   content: object
@@ -38,43 +28,23 @@ type dataPush = {
   id?: string | number
 };
 
-/**
- * @typedef {object} FindOptions
- * @property {string} keyName - Key to find
- * @property {string} keyValue - Value to find
- */
 type findOptions = {
   id?: string | number,
   keyName?: string,
   keyValue: string
 }
 
-/**
- * @typedef {object} EditKeyOptions
- * @property {string} key - Key to edit
- * @property {string} value - Value to edit
- */
 type editKey = {
 
   key:   string
   value: string
 };
 
-/**
- * @typedef {object} editOptions
- * @property {FindOptions}  find - Find options
- * @property {EditKeyOptions} edit - Edit key options
- */
 type editOptions = {
   find: findOptions,
   edit: editKey
 }
 
-/**
- * @typedef {object} EncryptedOptions
- * @property {string} content - Content to be encrypted
- * @property {number} salt - Length salt
- */
 type encriptOptions = {
 
   content: string,
@@ -84,11 +54,6 @@ type encriptOptions = {
 
 type CipherParams = typeof crypto.lib.CipherParams;
 
-/**
- * @typedef {object} DecryptedOptions
- * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
- * @property {string} secretKey - Secret key generate by encrypt method
- */
 type decryptOptions = {
 
   encryptKey: crypto.lib.CipherParams,
@@ -99,6 +64,11 @@ type decryptOptions = {
 
 
 export class Database extends BaseClient {
+  /**
+ * @typedef {Object} DatabaseOptions
+ * @property {string} database - Database name
+ * @property {string} path - Path to create ajax_databases folder
+ */
 
   /**
    * @constructor
@@ -210,7 +180,7 @@ export class Database extends BaseClient {
    * @protected
    * @description Write container file
    * @param {string} container - container name
-   * @param {object} value - Container new data
+   * @param {Object} value - Container new data
    */
   protected writeContainer(container: string, value: object) {
     fs.writeFile(`${this.path}/ajax_databases/${this.database}/containers/${container}.bson`, BSON.serialize(value), (err) => { 
@@ -222,7 +192,7 @@ export class Database extends BaseClient {
    * @protected
    * @description write container pointer
    * @param {string} pointer - Pointer name 
-   * @param {object} value  - Pointer new data
+   * @param {Object} value  - Pointer new data
    */
   protected writePointer(pointer: string, value: object) {
     fs.writeFile(`${this.path}/ajax_databases/${this.database}/pointers/${pointer}.bson`, BSON.serialize(value), (err) => { 
@@ -302,6 +272,12 @@ export class Database extends BaseClient {
 
     return BSON.deserialize(container); 
   }
+
+  /**
+ * @typedef {Object} PushOptions
+ * @property {Object} content - Content data to push
+ * @property {?(string|number)}  id? - ID container (Optional)
+ */
 
   /**
    * @public
@@ -408,6 +384,12 @@ export class Database extends BaseClient {
   }
 
   /**
+ * @typedef {Object} FindOptions
+ * @property {string} keyName - Key to find
+ * @property {string} keyValue - Value to find
+ */
+
+  /**
    * @public
    * @async
    * @description Get container data
@@ -451,6 +433,17 @@ export class Database extends BaseClient {
 
     return result;
   }
+  /**
+ * @typedef {Object} EditKeyOptions
+ * @property {string} key - Key to edit
+ * @property {string} value - Value to edit
+ */
+
+  /**
+ * @typedef {Object} EditOptions
+ * @property {FindOptions}  find - Find options
+ * @property {EditKeyOptions} edit - Edit key options
+ */
 
   /**
    * @public
@@ -539,6 +532,12 @@ export class Database extends BaseClient {
   }
 
   /**
+ * @typedef {Object} EncryptedOptions
+ * @property {string} content - Content to be encrypted
+ * @property {?number} [salt=10] - Length salt
+ */
+
+  /**
    * @public
    * @description Encrypted string
    * @param {EncryptedOptions} options - Encrypted Options
@@ -551,6 +550,12 @@ export class Database extends BaseClient {
 
     return { key_encrypt: encryptKey, secret_key: hash };
   }
+
+  /**
+ * @typedef {Object} DecryptedOptions
+ * @property {CipherParams} encryptKey - Encrypted key string generate by encrypt method
+ * @property {string} secretKey - Secret key generate by encrypt method
+ */
 
   /**
    * @public
